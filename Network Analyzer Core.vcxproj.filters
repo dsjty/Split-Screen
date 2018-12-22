@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\SubCtrls">
+      <UniqueIdentifier>{fddea0e4-7dd9-4e5b-bdb0-3003971eebdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Menus">
+      <UniqueIdentifier>{c55e6398-0aac-4f85-b0bc-88a6f09816e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Dialogs">
+      <UniqueIdentifier>{a50ad94a-3ec2-4f42-ba12-4e71c7da8568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Controls">
+      <UniqueIdentifier>{330e91d7-0521-441d-9b37-0ea39064e0ab}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+    <Text Include="KnownBugs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="inline.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="defines.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="popwnd.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="misc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="externs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="softmenu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="toolbar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CalKit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Dlg_MTSS.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Network Analyzer Core.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EntryFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_Button.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_CheckButton.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_ComboButton.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_InputButton.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_RadioButton.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_TracesConfig.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Analysis.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_ChannelsConfig.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuRoot.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Ctrl_Common.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Ctrl_PopupWnd.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Ctrl_SoftItem.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Ctrl_SoftMenu.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="WndHook.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SubCtrl_Common.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Preset.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="OrigFuncs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CalKit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EventHook.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Average.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Display.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Frequency.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_MacroSetup.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Marker.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Measurement.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Power.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_SaveRecall.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_SweepSetup.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_System.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Locale.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Func.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_0.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_1.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_2.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_3.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_4.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_5.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_2.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_7.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_7_1.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_CalFunc.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Menu_Calibration.cpp">
+      <Filter>源文件\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Color.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Ctrl_Toolbar.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolbarFunc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_1_6.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_Cal_3.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="Dlg_MTSS.cpp">
+      <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Network Analyzer Core.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="blue.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_0.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp_chk.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp_unchk.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bmp_enter.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_start.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_explorer.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_recall.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_save.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_tracemax.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_snapshot.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_loadrun.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_print.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_help.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_invert.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_newtrace.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_channelsconfig.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_marker.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bitmap1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_3.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_4.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="icon1.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bitmap2.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_print.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_0_1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_0_1_1.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_1s.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_2s.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_R.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_U.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="button_F.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_deltrace.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_markerSub.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="ico_Tracesconfig.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="G:\git\功能DLL源代码集合\ico_print.bmp">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="G:\git\功能DLL源代码集合\ico_snapshot.ico">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
