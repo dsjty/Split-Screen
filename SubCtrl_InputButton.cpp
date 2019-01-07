@@ -9,7 +9,7 @@ int WINAPI PhysEventHandler_Entry(WPARAM wParam, LPARAM lParam);
 
 
 //Sub Control :: UpdatePos
-int SubCtrl_InputButton_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
+int SubCtrl_InputButton_UpdatePos(PSOFT_SUB_ITEM lpMe)
 {
 	if (lpMe == NULL) return -1;
 
@@ -65,7 +65,7 @@ int SubCtrl_InputButton_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
 	return 0;
 }
 
-int SubCtrl_InputButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+int SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
 	lpMe->_hWnd = CreateWindowExW(0, WC_BUTTONW, GetSoftItemTextByIndex(lpMe, nLangId),
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
@@ -130,7 +130,7 @@ int SubCtrl_InputButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, in
 
 
 //Sub Control :: Event
-LRESULT SubCtrl_InputButton_OnClicked(PSOFT_SUB_ITEM lpSubItem, int nCtrlId, HWND hWnd)
+LRESULT SubCtrl_InputButton_OnClicked(PSOFT_SUB_ITEM lpSubItem, HWND hWnd)
 {
 	if ((lpSubItem->lpOpt[4]) && (lpSubItem->lpOpt[1]))
 	{
@@ -500,7 +500,7 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
 
-		if (GetParent(hItem) != hwSoftItem) 
+		if (GetParent(hItem) != hwSoftItem)
 			break;
 
 		if (lpSubItem)
@@ -515,7 +515,7 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			else if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TIME))
 				SetInputType(ITID_NUM);
 			else
-			SetInputType(ITID_GMK);
+				SetInputType(ITID_GMK);
 		}
 	}
 	break;
@@ -527,18 +527,18 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		else
 			lResult = DefWindowProc(hWnd, msg, wParam, lParam);
 
- 		SetInputItem(NULL);
- 		SetInputType(ITID_UNKNOWN);
+		SetInputItem(NULL);
+		SetInputType(ITID_UNKNOWN);
 
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
 
-		if (GetParent(hItem) != hwSoftItem) 
+		if (GetParent(hItem) != hwSoftItem)
 			break;
 
 		if (lpSubItem && lpSubItem->lpOpt[1])
 		{
-			if ((HWND)wParam == lpSubItem->_hWnd) 
+			if ((HWND)wParam == lpSubItem->_hWnd)
 				break;
 
 			WCHAR wcsText[MAX_PATH] = { 0 };

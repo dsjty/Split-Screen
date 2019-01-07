@@ -73,6 +73,15 @@
     <ClInclude Include="Dlg_MTSS.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TDMenu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TDItem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedData.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -236,6 +245,12 @@
     </ClCompile>
     <ClCompile Include="Dlg_MTSS.cpp">
       <Filter>源文件\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="TDMenu.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TDItem.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

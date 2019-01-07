@@ -34,12 +34,6 @@ void *lpTestSet2_CLB = nullptr;
 void *lpTestSet2_CLC = nullptr;
 void *lpTestSet2_CLD = nullptr;
 
-static WNDPROC wpfn_InputEdit = NULL;
-static LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-void SetInputType(int nNewType);
-
-
-
 const LPCSTR TestSetList[] =
 {
 	"TD10191_9",

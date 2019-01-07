@@ -547,7 +547,6 @@ int WINAPI fnClicked_Preset(DWORD dwFlags, WPARAM wParam, LPARAM lParam, struct 
 	{
 		ConfirmPreset();
 	}
-
 	return 0;
 }
 
@@ -632,7 +631,8 @@ SOFT_MENU menuRoot =
 	RESERVE_DWORD4
 };
 
-PSOFT_MENU lpMenuStack[256] = { &menuRoot };
+SOFT_MENU lpMenuStack[256] = { menuRoot };
+
 BYTE btMenuIndex = 0;
 
 

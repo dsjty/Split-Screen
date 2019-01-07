@@ -796,8 +796,8 @@ LRESULT CALLBACK wpfn_ToolBar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		SizeMainWnd(TRUE);
 		InvalidateRect(hwSoftMenu, NULL, TRUE);
 		UpdateWindow(hwSoftMenu);
-		InvalidateRect(hwSoftMenu2, NULL, TRUE);
-		UpdateWindow(hwSoftMenu2);
+		//InvalidateRect(hwSoftMenu2, NULL, TRUE);
+		//UpdateWindow(hwSoftMenu2);
 		InvalidateRect(hwToolbar, NULL, TRUE);
 		UpdateWindow(hwToolbar);
 	}

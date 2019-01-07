@@ -6,9 +6,9 @@ static LRESULT CALLBACK wp_ComboBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 extern CalKit cCalkit;
 
 //Sub Control :: UpdatePos
-int SubCtrl_ComboButton_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
+int SubCtrl_ComboButton_UpdatePos(PSOFT_SUB_ITEM lpMe)
 {
-	if (lpMe == NULL) 
+	if (lpMe == NULL)
 		return -1;
 
 	if ((lpMe->_hWnd) && (lpMe->lpOpt[4]))
@@ -30,7 +30,7 @@ int SubCtrl_ComboButton_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
 	return 0;
 }
 
-int SubCtrl_ComboButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+int SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
 	HWND hCombo = NULL;
 
@@ -48,7 +48,7 @@ int SubCtrl_ComboButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, in
 			{
 				WNDPROC wpTmp = (WNDPROC)SetWindowLong((HWND)lpMe->lpOpt[4], GWL_WNDPROC, (LONG)&wp_ComboBox);
 
-				if (wpfn_ComboBox == NULL) 
+				if (wpfn_ComboBox == NULL)
 					wpfn_ComboBox = wpTmp;
 			}
 			SubCtrl_ComboButton_UpdatePos(lpMe, 0);
@@ -65,13 +65,13 @@ int SubCtrl_ComboButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, in
 				ComboBox_InsertStringW(hCombo, dwIdx, GetStringByIndex(lppWStr[dwIdx], nLangId));
 			}
 		}
-		if (1 == lpMe->dwReserve[3])	
+		if (1 == lpMe->dwReserve[3])
 		{
 			wstring* lppWStr = (wstring*)lpMe->lpParams;
 			CALKITOBJ stCalObj = { 0 };
 			WCHAR pBuffer[100] = { 0 };
 			for (DWORD dwIdx = 0; dwIdx < lpMe->dwNumberOfParams; dwIdx++)
-			{				
+			{
 				stCalObj = cCalkit.GetCalKitName(dwIdx);
 				if (0 == stCalObj.dwObjNameAdd)
 					ComboBox_InsertStringW(hCombo, dwIdx, GetStringByIndex(lppWStr[dwIdx].c_str(), nLangId, lpMe->dwReserve[3]));
@@ -89,7 +89,7 @@ int SubCtrl_ComboButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, in
 	return 0;
 }
 
-LRESULT SubCtrl_ComoboButton_OnClicked(PSOFT_SUB_ITEM lpSubItem, int nCtrlId, HWND hWnd)
+LRESULT SubCtrl_ComoboButton_OnClicked(PSOFT_SUB_ITEM lpSubItem,  HWND hWnd)
 {
 	if (lpSubItem->dwStyle == SIS_ComboRadioButtonEx)
 		SET_FLAGS(lpSubItem->dwAttributes, SIAE_CHECKED);

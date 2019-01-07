@@ -5,20 +5,12 @@
 extern HFONT hFont_cfg1;
 extern HBITMAP hBmp_Enter;
 
-static HWND hWnd_PopWnd = NULL, hInputEdit = NULL, hBtnEnter = NULL, hBtnClose = NULL, hUpDn1 = NULL, hUpDn2 = NULL;
-PSOFT_SUB_ITEM lpInputItem = NULL;
 void *lpInputObject = NULL;
 LPCWSTR lpwcsTitle = NULL;
 DWORD dwCreateFlags = 0;
 ATOM wcPopupWnd = 0;
 
-static WNDPROC wpfn_InputEdit = NULL;
-
 WCHAR wcsSuffix[MAX_PATH] = { 0 };
-
-static LRESULT CALLBACK wpfn_PopupWnd(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-static LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-void SetInputType(int nNewType);
 
 
 int PopWnd_PopupInputBox(HWND hParent, LPCWSTR lpTitle, void *lpInput, PSOFT_SUB_ITEM lpSubItem, DWORD dwFlags)

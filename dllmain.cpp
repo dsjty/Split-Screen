@@ -12,7 +12,6 @@ extern "C" { int __afxForceUSRDLL; }
 
 //模块句柄
 HMODULE hMainMod = NULL;
-HMODULE hMod = NULL;
 
 BOOL APIENTRY DM_ProcessAttach(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved);
 

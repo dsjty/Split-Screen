@@ -1,9 +1,9 @@
 ﻿#include "stdafx.h"
 
 //Sub Control :: UpdatePos
-int SubCtrl_Button_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
+int SubCtrl_Button_UpdatePos(PSOFT_SUB_ITEM lpMe)
 {
-	if (lpMe == NULL) 
+	if (lpMe == NULL)
 		return -1;
 
 	if (CHK_FLAGS(lpMe->dwAttributes, SIA_EXLBL) && (lpMe->_hWnd) && (lpMe->lpOpt[4]))
@@ -28,7 +28,7 @@ int SubCtrl_Button_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
 }
 
 //Sub Control :: Create
-int SubCtrl_Button_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+int SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
 	lpMe->_hWnd = CreateWindowExW(0, WC_BUTTONW, GetSoftItemTextByIndex(lpMe, nLangId),
 		WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) |
@@ -72,7 +72,7 @@ int SubCtrl_Button_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, int x, 
 }
 
 //Sub Control :: Event
-LRESULT SubCtrl_Button_OnClicked(PSOFT_SUB_ITEM lpSubItem, int nCtrlId, HWND hWnd)
+LRESULT SubCtrl_Button_OnClicked(PSOFT_SUB_ITEM lpSubItem,HWND hWnd)
 {
 	return 0;
 }

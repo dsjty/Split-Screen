@@ -111,8 +111,6 @@ bool CalKit::SetCalKitName(LPCSTR name, int id)
 	return true;
 }
 
-CalKit cCalkit;
-
 
 //************************************
 // º¯ÊıÃû:    GetCalKitName

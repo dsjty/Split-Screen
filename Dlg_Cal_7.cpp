@@ -3,12 +3,8 @@
 
 extern CALDLG_CTXT dcCal_7_1;
 
-extern CalKit cCalkit;
-
 static int nLastIdx = -1;
-static WNDPROC wpfn_InputEdit = NULL;
 
-void SetInputType(int nNewType);
 static LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static void *lpThis_STD[21] =

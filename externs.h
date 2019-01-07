@@ -12,10 +12,10 @@
 #include <commctrl.h>
 #endif
 
+#include "stdafx.h"
 #include "misc.h"
 
 extern HMODULE hMainMod;
-extern HMODULE hMod;
 extern ATOM wcSoftMenu;
 extern ATOM wcSoftItem;
 extern ATOM wcToolBar;
@@ -25,7 +25,6 @@ extern int nChannels;
 
 
 extern HOOK_PTR HookPtr[];
-extern CWnd *cwMainWnd;
 extern CWnd *cwDrawRect;
 
 extern HWND hwSoftMenu, hwSoftMenu2;
@@ -41,7 +40,7 @@ extern HBITMAP hBmp_Checked, hBmp_Unchecked;
 
 //菜单栈
 extern SOFT_MENU menuRoot;
-extern PSOFT_MENU lpMenuStack[256];
+extern SOFT_MENU lpMenuStack[256];
 extern BYTE btMenuIndex;
 extern DWORD dwTagPageIndex;
 
@@ -49,6 +48,8 @@ void wndTDRCHK();
 int ResetHookPointer(HOOK_PTR lpHookPtr);
 BOOL SetOffsetHook(int *lpOffset, int *lpOldAddress, int nAddress);
 BOOL SetPointer(int *lpOffset, int *lpOldPointer, int nAddress);
+int PhysEventHook();
+
 
 //获取子菜单的指针
 void *GetSubMenuPointer(void *lpThis, int nIndex);
@@ -168,16 +169,11 @@ void SoftMenu_Pop();
 
 void SizeMainWnd(BOOL blSync);
 
-//标签页进入事件
-int TagPage_OnEnter();
-//标签页离开事件
-int TagPage_OnLeave();
+
 //显示当前标签页的帮助
 void * TagPage_ShowHelp(PSOFT_SUB_ITEM lpSubPage);
-//销毁当前标签页的所有项目 (blLeave 是否调用离开函数)
-int TagPage_DestroyItems(BOOL blLeave);
+
 //刷新当前标签页的项目
-int TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage);
 int TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage, BOOL blReload);
 int TagPage_RefreshItems(BOOL blReload);
 //更新当前项目在窗口的相对位置
@@ -218,9 +214,6 @@ int WINAPI fnUpdateData_Default(DWORD dwFlags, WPARAM wParam, LPARAM lParam, str
 int WINAPI fnUpdateData_DEC_Default(DWORD dwFlags, WPARAM wParam, LPARAM lParam, struct _SOFT_SUB_ITEM *lpSubItem);
 
 
-//void DrawSolidRect(HDC hDC, LPRECT lpRect, HBRUSH hFillBrush, int nPushed, int nFlags, LPCWSTR lpWStr);
-//绘制实体Edge
-void DrawSolidEdge(HDC hDC, LPRECT lpRect, HBITMAP hFillBrush,int nFlags, LPCWSTR lpWStr);
 //绘制复选框
 void DrawCheckBox(HDC hDC, LPRECT lpRect, HBRUSH hFillBrush, HPEN hChkPen, int nChecked, int nFlags);
 //绘制并拉伸位图

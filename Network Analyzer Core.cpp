@@ -7,15 +7,6 @@
 //E5062主窗口宽和高
 WORD wWidth_MainWnd = 0, wHeight_MainWnd = 0;
 
-//软菜单窗口句柄
-HWND hwSoftMenu = NULL;
-HWND hwSoftMenu2 = nullptr;
-//软菜单条目区域窗口句柄
-HWND hwSoftItem = NULL;
-
-//E5070主窗口句柄
-HWND hwMainWnd = NULL;
-
 void UpdateSize_UI();
 
 //************************************

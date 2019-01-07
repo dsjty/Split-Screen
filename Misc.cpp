@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 
-
 //窗口类原子
 ATOM wcSoftMenu = 0;
 ATOM wcSoftItem = 0;
@@ -14,16 +13,13 @@ extern WORD wWidth_SoftMenu;
 void SetSoftMenuWidth(WORD wWidth);
 BOOL WndCHK_TDR();
 
-static DWORD dwTDRDataAdd = NULL;
+DWORD dwTDRDataAdd = NULL;
 
 //语言Id 0=英语,1=简体中文,2=繁体中文
 int nLangId = 1;
 
 int nChannels = 0, nTraces = 0;
 
-//CWnd对象
-//DWORD dw_CWnd__Create = 0;
-CWnd *cwMainWnd = (CWnd *)NULL;
 
 //钩子跳转指针结构
 static HOOK_JMPPTR hjpOnSize = { (BASE + 0x94E3F9), (DWORD)&ef_CWnd__OnSize_main, 6, 0 };
@@ -37,18 +33,16 @@ HOOK_PTR HookPtr[] =
 
 //位图句柄
 //hBmp_Button* 为按钮背景图的位图句柄, 1为按钮,2为标签,S为选中,u为不可用,R为返回键用;
-HBITMAP hBmp_Button1 = NULL, hBmp_Button1s = NULL, hBmp_Button2 = NULL, hBmp_ButtonR = NULL, hBmp_ButtonU = NULL, hBmp_Button2s = NULL, hBmp_ButtonF=NULL;
+HBITMAP hBmp_Button1, hBmp_Button1s, hBmp_Button2, hBmp_ButtonR, hBmp_ButtonU, hBmp_Button2s, hBmp_ButtonF;
 //复选框位图句柄
-HBITMAP hBmp_Checked = NULL, hBmp_Unchecked = NULL;
+HBITMAP hBmp_Checked, hBmp_Unchecked;
 //频标的确认按钮位图句柄
-HBITMAP hBmp_Enter = NULL;
+HBITMAP hBmp_Enter;
 
 //备份的字节码
 static WORD wBakw_004A8FA0 = 0xFF6A, wBakw_004A90A0 = 0xFF6A;
 
 //窗口过程
-LRESULT CALLBACK wpfn_SoftMenu(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-LRESULT CALLBACK wpfn_SoftItem(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK wpfn_ToolBar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
@@ -384,7 +378,7 @@ BOOL APIENTRY DM_ProcessAttach(HMODULE hModule, DWORD ul_reason_for_call, LPVOID
 		wcex.cbSize = sizeof(WNDCLASSEX);
 
 		wcex.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-		wcex.lpfnWndProc = &wpfn_SoftMenu;
+		wcex.lpfnWndProc = ::DefWindowProc;
 		wcex.hInstance = hMod;
 		wcex.hIcon = NULL;
 		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -398,7 +392,7 @@ BOOL APIENTRY DM_ProcessAttach(HMODULE hModule, DWORD ul_reason_for_call, LPVOID
 		if (wcSoftMenu == 0)
 			return FALSE;
 	}
-
+	
 	//注册SoftItem窗口类
 	if (wcSoftItem == 0)
 	{
@@ -408,7 +402,7 @@ BOOL APIENTRY DM_ProcessAttach(HMODULE hModule, DWORD ul_reason_for_call, LPVOID
 		wcex.cbSize = sizeof(WNDCLASSEX);
 
 		wcex.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-		wcex.lpfnWndProc = 0;// &wpfn_SoftItem;
+		wcex.lpfnWndProc = ::DefWindowProc;
 		wcex.hInstance = hMod;
 		wcex.hIcon = NULL;
 		wcex.hCursor = LoadCursor(NULL, IDC_ARROW);

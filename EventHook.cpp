@@ -19,12 +19,8 @@ extern SOFT_MENU menuPreset;
 extern WORD wWidth_MainWnd, wHeight_MainWnd, wWidth_SoftMenu;
 extern WORD wBackupWidth;
 
-
 void *lpOrgJmpTabPtr_09 = NULL;
-static int nInputType = 0;
-static PSOFT_SUB_ITEM lpInputItem = NULL;
 bool bPreset = FALSE;
-
 
 void SetSoftMenuWidth(WORD wWidth);
 

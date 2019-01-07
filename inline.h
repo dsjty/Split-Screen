@@ -80,13 +80,13 @@ inline BOOL HitRect(RECT rect, int x, int y)
 
 inline PSOFT_MENU GetCurrentSoftMenu()
 {
-	if (lpMenuStack[btMenuIndex] == NULL)
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
 	{
-		lpMenuStack[0] = &menuRoot;
+		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
 		btMenuIndex = 0;
 	}
 
-	return lpMenuStack[btMenuIndex];
+	return &lpMenuStack[btMenuIndex];
 }
 
 //更新控件
@@ -257,45 +257,45 @@ inline DWORD TestHitItem(HWND hWnd_SoftItem)
 
 inline PSOFT_TAG_PAGE GetTagPageByIndex(DWORD dwIndex)
 {
-	if (lpMenuStack[btMenuIndex] == NULL)
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
 	{
-		lpMenuStack[0] = &menuRoot;
+		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
 		btMenuIndex = 0;
 	}
 
-	if (lpMenuStack[btMenuIndex] == NULL) 
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL) 
 		return NULL;
 
-	if (dwIndex >= lpMenuStack[btMenuIndex]->dwNumOfTagPages)
+	if (dwIndex >= lpMenuStack[btMenuIndex].dwNumOfTagPages)
 		return NULL;
 
-	return &(lpMenuStack[btMenuIndex]->lpTagPage[dwIndex]);
+	return &(lpMenuStack[btMenuIndex].lpTagPage[dwIndex]);
 }
 
 
 inline LPCWSTR GetCurrentSoftMenuTitle()
 {
-	if (lpMenuStack[btMenuIndex] == NULL)
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
 	{
-		lpMenuStack[0] = &menuRoot;
+		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
 		btMenuIndex = 0;
 	}
 
-	return (lpMenuStack[btMenuIndex]->szMenuTitle != NULL) ? lpMenuStack[btMenuIndex]->szMenuTitle : lpMenuStack[btMenuIndex]->lpszMenuTitle;
+	return (lpMenuStack[btMenuIndex].lpszMenuTitle != NULL) ? lpMenuStack[btMenuIndex].lpszMenuTitle : lpMenuStack[btMenuIndex].lpszMenuTitle;
 }
 
 inline LPCWSTR GetCurrentSoftMenuTitleByIndex(int nIndex)
 {
-	if (lpMenuStack[btMenuIndex] == NULL)
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
 	{
-		lpMenuStack[0] = &menuRoot;
+		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
 		btMenuIndex = 0;
 	}
 
-	if (lpMenuStack[btMenuIndex]->szMenuTitle != NULL)
-		return lpMenuStack[btMenuIndex]->szMenuTitle;
+	if (lpMenuStack[btMenuIndex].lpszMenuTitle != NULL)
+		return lpMenuStack[btMenuIndex].lpszMenuTitle;
 
-	return GetStringByIndex(lpMenuStack[btMenuIndex]->lpszMenuTitle, nIndex);
+	return GetStringByIndex(lpMenuStack[btMenuIndex].lpszMenuTitle, nIndex);
 }
 
 inline DWORD GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem)

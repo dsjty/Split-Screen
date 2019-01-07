@@ -104,7 +104,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>NACore</TargetName>
+    <TargetName>TDCore</TargetName>
+    <OutDir>C:\Program Files %28x86%29\Agilent\E5070</OutDir>
+    <IntDir />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -112,6 +114,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>TDCore</TargetName>
+    <OutDir>C:\Program Files %28x86%29\Agilent\E5070</OutDir>
+    <IntDir />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ICC|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -238,9 +242,12 @@
     <ClInclude Include="misc.h" />
     <ClInclude Include="popwnd.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SharedData.h" />
     <ClInclude Include="softmenu.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TDMenu.h" />
+    <ClInclude Include="TDItem.h" />
     <ClInclude Include="toolbar.h" />
   </ItemGroup>
   <ItemGroup>
@@ -317,6 +324,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_ICC|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SubCtrl_Common.cpp" />
+    <ClCompile Include="TDMenu.cpp" />
+    <ClCompile Include="TDItem.cpp" />
     <ClCompile Include="ToolbarFunc.cpp" />
     <ClCompile Include="WndHook.cpp" />
     <ClCompile Include="SubCtrl_Button.cpp" />

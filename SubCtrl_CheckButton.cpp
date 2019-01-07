@@ -1,16 +1,16 @@
 ﻿#include "stdafx.h"
 
 //Sub Control :: UpdatePos
-int SubCtrl_CheckButton_UpdatePos(PSOFT_SUB_ITEM lpMe, DWORD dwFlags)
+int SubCtrl_CheckButton_UpdatePos(PSOFT_SUB_ITEM lpMe)
 {
 	return 0;
 }
 
 
-int SubCtrl_CheckButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+int SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
 	int nRet = 0;
-	
+
 	lpMe->_hWnd = CreateWindowExW(0, WC_BUTTONW, GetSoftItemTextByIndex(lpMe, nLangId),
 		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
 		x, y, nWidth, nHeight, hWnd, NULL, hMod, NULL);
@@ -68,7 +68,7 @@ int SubCtrl_CheckButton_Create(HWND hWnd, DWORD dwFlags, PSOFT_SUB_ITEM lpMe, in
 }
 
 //Sub Control :: Event
-LRESULT SubCtrl_CheckButton_OnClicked(PSOFT_SUB_ITEM lpSubItem, int nCtrlId, HWND hWnd)
+LRESULT SubCtrl_CheckButton_OnClicked(PSOFT_SUB_ITEM lpSubItem, HWND hWnd)
 {
 	UpdateCheckBoxState(lpSubItem);
 

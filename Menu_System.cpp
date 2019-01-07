@@ -1818,7 +1818,7 @@ SOFT_TAG_PAGE submenuSystem[] =
 	{
 		TPF_FN_ENTER,
 		0,
-		L"System\0系统\0系統\0\0",
+		L"SystemConfig\0系统配置\0系統配置\0\0",
 		NULL,
 		sizeof(subitemSystem) / sizeof(SOFT_SUB_ITEM),
 		subitemSystem,
@@ -1891,7 +1891,7 @@ SOFT_MENU menuSystem =
 {
 	0,
 	0,
-	L"System\0系统\0系統\0\0",
+	L"Systems\0系 统\0系 統\0\0",
 	NULL,
 	sizeof(submenuSystem) / sizeof(SOFT_TAG_PAGE),
 	submenuSystem,

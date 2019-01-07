@@ -332,7 +332,7 @@ SOFT_TAG_PAGE submenuDisplay[] =
 	{
 		TPF_FN_ENTER,
 		0,
-		L"Display\0显示\0顯示\0\0",
+		L"Display Config\0显示配置\0顯示配置\0\0",
 		NULL,
 		sizeof(subitemDisplay) / sizeof(SOFT_SUB_ITEM),
 		subitemDisplay,
@@ -377,7 +377,7 @@ SOFT_MENU menuDisplay =
 {
 	0,
 	0,
-	L"Display\0显示\0顯示\0\0",
+	L"Displays\0显 示\0顯 示\0\0",
 	NULL,
 	sizeof(submenuDisplay) / sizeof(SOFT_TAG_PAGE),
 	submenuDisplay,

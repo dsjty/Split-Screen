@@ -76,3 +76,6 @@
 #include "externs.h"
 #include "inline.h"
 #include "CalKit.h"
+#include "TDMenu.h"
+#include "TDItem.h"
+#include "SharedData.h"
