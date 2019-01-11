@@ -11,9 +11,6 @@ TDMenu *cwMenuWnd, *cwMenuWnd2;
 HWND hwSoftMenu = NULL;
 HWND hwSoftMenu2 = NULL;
 
-//软菜单条目区域窗口句柄
-HWND hwSoftItem = NULL;
-
 HMODULE hMod = NULL;
 static int nInputType = 0;
 static HWND hWnd_PopWnd = NULL, hInputEdit = NULL, hBtnEnter = NULL, hBtnClose = NULL, hUpDn1 = NULL, hUpDn2 = NULL;
@@ -27,8 +24,6 @@ static WNDPROC wpfn_InputBox = NULL;
 static WNDPROC wpfn_ComboBox = NULL;
 
 
-LRESULT CALLBACK wp_Button(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-void SetWndProc_Button(WNDPROC wpNewProc, BOOL blForce);
 void SetInputType(int nNewType);
 void SetInputItem(PSOFT_SUB_ITEM lpSubItem);
 

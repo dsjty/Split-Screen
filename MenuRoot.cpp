@@ -631,11 +631,6 @@ SOFT_MENU menuRoot =
 	RESERVE_DWORD4
 };
 
-SOFT_MENU lpMenuStack[256] = { menuRoot };
-
-BYTE btMenuIndex = 0;
-
-
 void UpdatePresetState()
 {
 	const char *lpInfFile;

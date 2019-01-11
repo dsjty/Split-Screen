@@ -138,9 +138,6 @@
     <ClCompile Include="WndHook.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SubCtrl_Common.cpp">
-      <Filter>源文件\SubCtrls</Filter>
-    </ClCompile>
     <ClCompile Include="Menu_Preset.cpp">
       <Filter>源文件\Menus</Filter>
     </ClCompile>

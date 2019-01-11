@@ -78,39 +78,11 @@ inline BOOL HitRect(RECT rect, int x, int y)
 		return FALSE;
 }
 
-inline PSOFT_MENU GetCurrentSoftMenu()
-{
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
-	{
-		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
-		btMenuIndex = 0;
-	}
-
-	return &lpMenuStack[btMenuIndex];
-}
-
 //更新控件
 inline void UpdateCurrentItems()
 {
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
-
-	if (lpTagPage)
-	{
-		DWORD dwIndex;
-
-		for (dwIndex = 0; dwIndex < lpTagPage->dwNumOfSubItems; dwIndex++)
-		{
-			if (lpTagPage->lpSubItem[dwIndex]._hWnd)
-			{
-				InvalidateRect(lpTagPage->lpSubItem[dwIndex]._hWnd, NULL, TRUE);
-				UpdateWindow(lpTagPage->lpSubItem[dwIndex]._hWnd);
-			}
-		}
-	}
-
-	InvalidateRect(hwSoftItem, NULL, TRUE);
-
-	UpdateWindow(hwSoftItem);
+	SendMessage(cwMenuWnd->GetItemHwnd(), WM_REFRESH, 0, 0);
+	SendMessage(cwMenuWnd2->GetItemHwnd(), WM_REFRESH, 0, 0);
 }
 
 inline void UpdateDataByTagPage(PSOFT_TAG_PAGE lpTagPage)
@@ -152,25 +124,6 @@ inline void UpdateDataByTagPage(PSOFT_TAG_PAGE lpTagPage)
 				}
 
 				SetWindowTextW((HWND)lpSubItem->lpOpt[4], wcsText);
-			}
-		}
-	}
-}
-
-inline void UpdateCurrentData()
-{
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
-
-	if (lpTagPage)
-	{
-		DWORD dwIndex;
-
-		for (dwIndex = 0; dwIndex < lpTagPage->dwNumOfSubItems; dwIndex++)
-		{
-			if (CHK_FLAGS(lpTagPage->lpSubItem[dwIndex].dwFlags, SIF_FN_UPDATEDATA) && (lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA]))
-			{
-				func_ItemEvent_UpdateData fnUpdateData = (func_ItemEvent_UpdateData)lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA];
-				fnUpdateData(0, 0, 0, &(lpTagPage->lpSubItem[dwIndex]));
 			}
 		}
 	}
@@ -237,117 +190,6 @@ inline void UpdateCurrentItemsAndData()
 	PopWnd_UpdateInputBox();
 }
 
-//测试窗口句柄是不是当前子菜单下的SoftItem
-inline DWORD TestHitItem(HWND hWnd_SoftItem)
-{
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
-	PSOFT_SUB_ITEM lpSubItem;
-	DWORD dwIndex;
-
-	for (dwIndex = 0; dwIndex < lpTagPage->dwNumOfSubItems; dwIndex++)
-	{
-		lpSubItem = &(lpTagPage->lpSubItem[dwIndex]);
-
-		if (hWnd_SoftItem == lpSubItem->_hWnd)
-			return dwIndex;
-	}
-
-	return INVALID_INDEX;
-}
-
-inline PSOFT_TAG_PAGE GetTagPageByIndex(DWORD dwIndex)
-{
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
-	{
-		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
-		btMenuIndex = 0;
-	}
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL) 
-		return NULL;
-
-	if (dwIndex >= lpMenuStack[btMenuIndex].dwNumOfTagPages)
-		return NULL;
-
-	return &(lpMenuStack[btMenuIndex].lpTagPage[dwIndex]);
-}
-
-
-inline LPCWSTR GetCurrentSoftMenuTitle()
-{
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
-	{
-		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
-		btMenuIndex = 0;
-	}
-
-	return (lpMenuStack[btMenuIndex].lpszMenuTitle != NULL) ? lpMenuStack[btMenuIndex].lpszMenuTitle : lpMenuStack[btMenuIndex].lpszMenuTitle;
-}
-
-inline LPCWSTR GetCurrentSoftMenuTitleByIndex(int nIndex)
-{
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL)
-	{
-		memcpy(&lpMenuStack[0], &menuRoot, sizeof(SOFT_MENU));
-		btMenuIndex = 0;
-	}
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle != NULL)
-		return lpMenuStack[btMenuIndex].lpszMenuTitle;
-
-	return GetStringByIndex(lpMenuStack[btMenuIndex].lpszMenuTitle, nIndex);
-}
-
-inline DWORD GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem)
-{
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
-
-	if (lpTagPage && (((DWORD)lpSubItem - (DWORD)lpTagPage->lpSubItem) % sizeof(SOFT_SUB_ITEM) == 0))
-	{
-		DWORD dwOffset = (DWORD)lpSubItem - (DWORD)lpTagPage->lpSubItem;
-		DWORD dwIndex = dwOffset / sizeof(SOFT_SUB_ITEM);
-
-		if (dwIndex < lpTagPage->dwNumOfSubItems)
-			return dwIndex;
-	}
-
-	return INVALID_INDEX;
-}
-
-inline DWORD GetIndexBySoftItem(PSOFT_TAG_PAGE lpTagPage, PSOFT_SUB_ITEM lpSubItem)
-{
-	if (lpTagPage && (((DWORD)lpSubItem - (DWORD)lpTagPage->lpSubItem) % sizeof(SOFT_SUB_ITEM) == 0))
-	{
-		DWORD dwOffset = (DWORD)lpSubItem - (DWORD)lpTagPage->lpSubItem;
-		DWORD dwIndex = dwOffset / sizeof(SOFT_SUB_ITEM);
-
-		if (dwIndex < lpTagPage->dwNumOfSubItems)
-			return dwIndex;
-	}
-
-	return INVALID_INDEX;
-}
-
-inline PSOFT_SUB_ITEM GetSoftItemByIndex(int nIndex)
-{
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
-
-	if (lpTagPage == NULL) 
-		return NULL;
-	if ((DWORD)nIndex >= lpTagPage->dwNumOfSubItems) 
-		return NULL;
-
-	return &(lpTagPage->lpSubItem[nIndex]);
-}
-
-inline LPCWSTR GetSoftItemText(PSOFT_SUB_ITEM lpSubItem)
-{
-	if (lpSubItem == NULL) 
-		return NULL;
-
-	return (lpSubItem->szItemText != NULL) ? lpSubItem->szItemText : lpSubItem->lpszItemText;
-}
-
 inline LPCWSTR GetSoftItemTextByIndex(PSOFT_SUB_ITEM lpSubItem, int nIndex)
 {
 	if (lpSubItem == NULL) 
@@ -359,51 +201,6 @@ inline LPCWSTR GetSoftItemTextByIndex(PSOFT_SUB_ITEM lpSubItem, int nIndex)
 	return GetStringByIndex(lpSubItem->lpszItemText, nIndex);
 }
 
-inline PSOFT_SUB_ITEM GetGroupHeader(PSOFT_TAG_PAGE lpTagPage, PSOFT_SUB_ITEM lpSubItem)
-{
-	if (lpTagPage == NULL) 
-		return NULL;
-	if (lpSubItem == NULL) 
-		return NULL;
-	if (lpSubItem->dwAttributes & SIA_GROUP) 
-		return NULL;
-	if (lpSubItem->dwGroupIndex >= lpTagPage->dwNumOfSubItems) 
-		return NULL;
-
-	if (lpTagPage->lpSubItem[lpSubItem->dwGroupIndex].dwAttributes & SIA_GROUP)
-		return &(lpTagPage->lpSubItem[lpSubItem->dwGroupIndex]);
-
-	return NULL;
-}
-
-inline DWORD GetGroupOffsetIndex(PSOFT_TAG_PAGE lpTagPage, PSOFT_SUB_ITEM lpSubItem)
-{
-	if (lpTagPage == NULL) 
-		return 0;
-	if (lpSubItem == NULL) 
-		return 0;
-	if (lpSubItem->dwAttributes & SIA_GROUP) 
-		return 0;
-	if (lpSubItem->dwGroupIndex >= lpTagPage->dwNumOfSubItems) 
-		return 0;
-	if ((DWORD)lpSubItem > (DWORD)&(lpTagPage->lpSubItem[lpTagPage->dwNumOfSubItems - 1])) 
-		return 0;
-
-	DWORD dwOffset = (DWORD)lpSubItem - (DWORD)&(lpTagPage->lpSubItem[lpSubItem->dwGroupIndex]);
-	return dwOffset / sizeof(SOFT_SUB_ITEM);
-}
-
-inline LPCWSTR GetActiveItemTextByTagPage(PSOFT_TAG_PAGE lpTagPage)
-{
-	if ((lpTagPage) && (lpTagPage->dwActiveIndex < lpTagPage->dwNumOfSubItems))
-	{
-		PSOFT_SUB_ITEM lpSubItem = &(lpTagPage->lpSubItem[lpTagPage->dwActiveIndex]);
-
-		return GetSoftItemTextByIndex(lpSubItem, nLangId);
-	}
-
-	return NULL;
-}
 
 inline LPCWSTR GetActiveItemTextBySoftMenu(PSOFT_MENU lpSoftMenu)
 {

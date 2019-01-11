@@ -34,12 +34,6 @@ SOFT_TAG_PAGE lpTagPage = { 0 };
 //菜单区域的上下箭头rect
 RECT rcItemUp, rcItemDown, rcMenuUp, rcMenuDown;
 
-RECT rcMenuButton, rcRetButton;
-
-//自绘控件的状态 State
-int nClickState = 0, nLastClickState = 0;
-//static WNDPROC wp_OrgDrawProc = NULL;
-
 //菜单当前index
 DWORD dwTagPageIndex = 0;
 
@@ -179,115 +173,6 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	}
 #endif
 	return blRet;
-}
-
-void SoftMenu_Reset()
-{
-	lpSoftMenu = { 0 };
-	memcpy(&lpSoftMenu, &menuRoot, sizeof(SOFT_MENU));
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle)
-	{
-		PSOFT_MENU lpCurSoftMenu = &lpMenuStack[btMenuIndex];
-
-		if (CHK_FLAGS(lpCurSoftMenu->dwFlags, SMF_FN_LEAVE) && (lpCurSoftMenu->fnLeave))
-			lpCurSoftMenu->fnLeave(0, 0, 0, lpCurSoftMenu);
-	}
-
-	memcpy(&lpMenuStack[0], &lpSoftMenu, sizeof(SOFT_MENU));
-
-	btMenuIndex = 0;
-
-	if (CHK_FLAGS(lpSoftMenu.dwFlags, SMF_FN_ENTER) && (lpSoftMenu.fnEnter))
-		lpSoftMenu.fnEnter(0, 0, 0, &lpSoftMenu);
-
-	dwTagPageIndex = 0;
-	TagPage_RefreshItems(&lpSoftMenu.lpTagPage[0]);
-	SoftItem_SetFocus(0, 0);
-
-	UpdateSoftMenu();
-	return;
-}
-
-//************************************
-// 函数名:    SoftMenu_Push
-// Access:    public 
-// 返回值类型:   void
-// 参数: PSOFT_MENU lpSoftMenu
-// 说明: 菜单压栈(用于返回键)
-//************************************
-void SoftMenu_Push(PSOFT_MENU lpSoftMenu)
-{
-	BYTE btNew = 1;		//始终只有一个栈了;所以返回键始终都是返回主菜单
-
-	if (lpSoftMenu == NULL) 
-		return;
-
-	memcpy(&lpMenuStack[btNew], lpSoftMenu, sizeof(SOFT_MENU));
-	
-	btMenuIndex = btNew;
-
-	if (CHK_FLAGS(lpSoftMenu->dwFlags, SMF_FN_ENTER) && (lpSoftMenu->fnEnter))
-		lpSoftMenu->fnEnter(0, 0, 0, lpSoftMenu);
-
-	memcpy(&lpTagPage, &(lpSoftMenu->lpTagPage[0]), sizeof(SOFT_TAG_PAGE));
-
-	dwTagPageIndex = 0;
-
-	TagPage_RefreshItems(&lpTagPage);
-	SoftItem_SetFocus(0, 0);
-	UpdateSoftMenu();
-	return;
-}
-
-//************************************
-// 函数名:    SoftMenu_Pop
-// Access:    public 
-// 返回值类型:   void
-// 说明: 菜单出栈(用于返回键)
-//************************************
-void SoftMenu_Pop()
-{
-	if (btMenuIndex == 0) 
-		return;
-
-	BYTE btNew = btMenuIndex - 1;
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle)
-	{
-		PSOFT_MENU lpCurSoftMenu = &lpMenuStack[btMenuIndex];
-
-		if (CHK_FLAGS(lpCurSoftMenu->dwFlags, SMF_FN_LEAVE) && (lpCurSoftMenu->fnLeave))
-			lpCurSoftMenu->fnLeave(0, 0, 0, lpCurSoftMenu);
-	}
-
-	while (lpMenuStack[btNew].lpszMenuTitle == NULL)
-	{
-		if (btNew == 0)
-		{
-			memcpy(&lpMenuStack[btNew], &menuRoot, sizeof(SOFT_MENU));
-			break;
-		}
-		btNew--;
-	}
-
-	btMenuIndex = btNew;
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle)
-	{
-		PSOFT_MENU lpNewSoftMenu = &lpMenuStack[btMenuIndex];
-
-		if (CHK_FLAGS(lpNewSoftMenu->dwFlags, SMF_FN_ENTER) && (lpNewSoftMenu->fnEnter))
-			lpNewSoftMenu->fnEnter(0, 0, 0, lpNewSoftMenu);
-	}
-
-	memcpy(&lpTagPage, &(lpMenuStack[btMenuIndex].lpTagPage[0]),sizeof(SOFT_TAG_PAGE));
-	dwTagPageIndex = 0;
-	
-	TagPage_RefreshItems(&lpTagPage);
-	SoftItem_SetFocus(0, 0);
-	UpdateSoftMenu();
-	return;
 }
 
 void SizeMainWnd(BOOL blSync)
@@ -496,53 +381,11 @@ DWORD TagPage_FreeItem(PSOFT_TAG_PAGE lpTagPage)
 	return dwRet;
 }
 
-//设置当前软菜单中激活的标签页index
-int TagPage_SetIndex(DWORD dwNewIndex)
-{
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle == NULL) 
-		return -1;
-	if (dwNewIndex >= lpMenuStack[btMenuIndex].dwNumOfTagPages) 
-		return -2;
-
-	dwTagPageIndex = lpMenuStack[btMenuIndex].dwActiveIndex = dwNewIndex;
-	TagPage_RefreshItems(&lpMenuStack[btMenuIndex].lpTagPage[dwNewIndex]);
-	SoftItem_SetFocus(0, 0);
-	UpdateSoftMenu();
-
-	return 0;
-}
-
-int TagPage_Prev()
-{
-	PSOFT_MENU lpCurSoftMenu = &lpMenuStack[btMenuIndex];
-
-	if (lpCurSoftMenu == NULL) 
-		return -10;
-
-	if (dwTagPageIndex - 1 < lpCurSoftMenu->dwNumOfTagPages)
-		return TagPage_SetIndex(dwTagPageIndex - 1);
-
-	return 0;
-}
-
-int TagPage_Next()
-{
-	PSOFT_MENU lpCurSoftMenu = &lpMenuStack[btMenuIndex];
-
-	if (lpCurSoftMenu == NULL) 
-		return -10;
-
-	if (dwTagPageIndex + 1 < lpCurSoftMenu->dwNumOfTagPages)
-		return TagPage_SetIndex(dwTagPageIndex + 1);
-
-	return 0;
-}
-
 
 void UpdateSoftMenu()
 {
-	InvalidateRect(cwMenuWnd2->m_hWnd, NULL, TRUE);
-	UpdateWindow(cwMenuWnd->m_hWnd);
+	InvalidateRect(cwMainWnd->m_hWnd, NULL, TRUE);
+	UpdateWindow(cwMainWnd->m_hWnd);
 }
 
 

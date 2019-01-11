@@ -33,7 +33,7 @@ void TDMenu::DSM_Title(CDC *hDC, const LPPAINTSTRUCT lpps)
 	RECT rect;
 	hDC->SelectObject(hPatternBrush_LtBlue);
 	hDC->RoundRect(2, 2, wWidth_SoftMenu - 4, 32, 8, 8);
-	
+
 	rect.left = 26;
 	rect.top = 10;
 	rect.right = wWidth_SoftMenu - 26;
@@ -43,7 +43,7 @@ void TDMenu::DSM_Title(CDC *hDC, const LPPAINTSTRUCT lpps)
 	hDC->SetBkMode(TRANSPARENT);
 	hDC->SelectObject(hFont_cfg2);
 
-	DrawTextW(hDC->m_hDC, GetCurrentSoftMenuTitleByIndex(nLangId), -1, &rect, DT_CENTER | DT_SINGLELINE);
+	DrawTextW(hDC->m_hDC, GetStringByIndex(smCurMenu->lpszMenuTitle, nLangId), -1, &rect, DT_CENTER | DT_SINGLELINE);
 }
 
 void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
@@ -51,7 +51,6 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 	RECT rect, rect2;
 	int nHeight;
 	DWORD dwTmp;
-	PSOFT_MENU lpSoftMenu = GetCurrentSoftMenu();
 
 	rect.left = wWidth_SoftMenu - WIDTH_SUBMENU;
 	rect.top = 36;
@@ -106,7 +105,7 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 
 	hDC->SelectObject(hFont_cfg1);
 
-	for (dwTmp = 0; dwTmp < lpSoftMenu->dwNumOfTagPages; dwTmp++)
+	for (dwTmp = 0; dwTmp < vcTagList.size(); dwTmp++)
 	{
 		if (rect2.top + 28 > rect2.bottom)
 			break;
@@ -116,38 +115,36 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 		int nPushed = 0;
 		int Hight = 55;
 
-		lpSoftMenu->lpTagPage[dwTmp].rect.left = rect2.left;
-		lpSoftMenu->lpTagPage[dwTmp].rect.top = rect2.top;
-		lpSoftMenu->lpTagPage[dwTmp].rect.right = rect2.right;
-		lpSoftMenu->lpTagPage[dwTmp].rect.bottom = rect2.top + Hight;
+		vcTagList.at(dwTmp).rect.left = rect2.left;
+		vcTagList.at(dwTmp).rect.top = rect2.top;
+		vcTagList.at(dwTmp).rect.right = rect2.right;
+		vcTagList.at(dwTmp).rect.bottom = rect2.top + Hight;
 
 		rect2.top += Hight + 3;
 
-		lpText = (lpSoftMenu->lpTagPage[dwTmp].szTagText) ? lpSoftMenu->lpTagPage[dwTmp].szTagText : GetStringByIndex(lpSoftMenu->lpTagPage[dwTmp].lpszTagText, nLangId);
+		lpText = (vcTagList.at(dwTmp).szTagText) ? vcTagList.at(dwTmp).szTagText : GetStringByIndex(vcTagList.at(dwTmp).lpszTagText, nLangId);
 
 		hBrush = hBmp_Button2;
 
-		if (dwTagPageIndex == (int)dwTmp)
-			nPushed++;
-		else if ((nClickState >= 20) && (nClickState - 20 == (int)dwTmp))
-			nPushed++;
+		CHK_FLAGS(vcTagList.at(dwTmp).dwFlags, SM_ISFOCUS);
+		nPushed++;
 
 		if (nPushed)
 		{
 			hBrush = hBmp_Button2s;
-			lpSoftMenu->lpTagPage[dwTmp].rect.left -= 4;
-			lpSoftMenu->lpTagPage[dwTmp].rect.right -= 4;
-			DrawSolidEdge(hDC, &lpSoftMenu->lpTagPage[dwTmp].rect, hBrush, 0x10, lpText);
-			lpSoftMenu->lpTagPage[dwTmp].rect.left += 4;
-			lpSoftMenu->lpTagPage[dwTmp].rect.right += 4;
+			vcTagList.at(dwTmp).rect.left -= 4;
+			vcTagList.at(dwTmp).rect.right -= 4;
+			DrawSolidEdge(hDC, &vcTagList.at(dwTmp).rect, hBrush, 0x10, lpText);
+			vcTagList.at(dwTmp).rect.left += 4;
+			vcTagList.at(dwTmp).rect.right += 4;
 		}
 		else
-			DrawSolidEdge(hDC, &lpSoftMenu->lpTagPage[dwTmp].rect, hBrush, 0x01, lpText);
+			DrawSolidEdge(hDC, &vcTagList.at(dwTmp).rect, hBrush, 0x01, lpText);
 	}
 
 	rcMenuButton.bottom = rect2.top - 2;
 
-	if (lpSoftMenu != &menuRoot)
+	if (smCurMenu->fnEnter != menuRoot.fnEnter)
 	{
 		rcRetButton.left = rect2.left;
 		rcRetButton.top = rect2.top + 4;
@@ -330,60 +327,122 @@ int TDMenu::DrawStretchBitmap(CDC *hDC, CBitmap *hBitmap, LPCRECT lpRect)
 
 void TDMenu::UpdateSoftMenu()
 {
-	InvalidateRect(NULL,TRUE);
+	InvalidateRect(NULL, TRUE);
 	UpdateWindow();
 }
 
 void TDMenu::SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFlags)
 {
-	PSOFT_TAG_PAGE lpTagPage;
-	BYTE btNew = 1;
-
 	if (lpSoftMenu == NULL)
 		return;
 
-	if (CHK_FLAGS(dwFlags, 0x01))
-		btNew = 1;
+	PSOFT_MENU lpTSoftMenu = &MenuStack[1];
 
-	if (btNew == 0)
-		btNew = 0xFF;
-
-	lpMenuStack[btNew] = *lpSoftMenu;
-
-	if (lpMenuStack[btMenuIndex].lpszMenuTitle)
+	if (lpTSoftMenu->fnLeave)
 	{
-		smCurMenu = lpMenuStack[btMenuIndex];
-
-		if (CHK_FLAGS(smCurMenu.dwFlags, SMF_FN_LEAVE) && (smCurMenu.fnLeave))
-		{
-			smCurMenu.fnLeave(0, 0, 0, &smCurMenu);
-		}
+		if (CHK_FLAGS(lpTSoftMenu->dwFlags, SMF_FN_LEAVE) && (lpTSoftMenu->fnLeave))
+			lpTSoftMenu->fnLeave(0, 0, 0, lpTSoftMenu);
 	}
+	if (lpSoftMenu->fnEnter != MenuStack[1].fnEnter)
+	{
+		MenuStack[1] = *lpSoftMenu;
+		smCurMenu = &MenuStack[1];
+	}
+	else
+		smCurMenu = &MenuStack[0];
 
-	btMenuIndex = btNew;
+	if (CHK_FLAGS(smCurMenu->dwFlags, SMF_FN_ENTER) && (smCurMenu->fnEnter))
+		smCurMenu->fnEnter(0, 0, 0, smCurMenu);
 
+	vcTagList.clear();
 
-	smCurMenu = lpMenuStack[btMenuIndex];
+	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
+		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
-	if (CHK_FLAGS(smCurMenu.dwFlags, SMF_FN_ENTER) && (smCurMenu.fnEnter))
-		smCurMenu.fnEnter(0, 0, 0, &smCurMenu);
+	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
 
-	if ((dwNewIndex >= smCurMenu.dwNumOfTagPages))
-		dwNewIndex = 0;
+	stCurTagPage = &vcTagList.at(0);
 
-	dwTagPageIndex = dwNewIndex;
-	lpTagPage = &(smCurMenu.lpTagPage[dwTagPageIndex]);
-	
 	if (IsWindowVisible() == FALSE)
-	{
 		SNDMSG(hwMainWnd, 0x0432, 9, MAKELPARAM(0x003B, 0x0001));
-	}
 
-	tdItem->TagPage_RefreshItems(lpTagPage);	//改成子窗口类，让子窗口自己刷新	18-12-29;
-
-	SoftItem_SetFocus(0, 0);
+	tdItem->TagPage_RefreshItems(stCurTagPage);	//改成子窗口类，让子窗口自己刷新	18-12-29;
 	UpdateSoftMenu();
 	return;
+}
+
+void TDMenu::SoftMenu_Reset()
+{
+	if (MenuStack[1].lpszMenuTitle)
+	{
+		PSOFT_MENU lpCurSoftMenu = &MenuStack[1];
+		if (CHK_FLAGS(lpCurSoftMenu->dwFlags, SMF_FN_LEAVE) && (lpCurSoftMenu->fnLeave))
+			lpCurSoftMenu->fnLeave(0, 0, 0, lpCurSoftMenu);
+	}
+
+	memcpy(&MenuStack[0], &menuRoot, sizeof(SOFT_MENU));
+	memset(&MenuStack[1], 0, sizeof(SOFT_MENU));
+	smCurMenu = &MenuStack[0];
+
+	smCurMenu->fnEnter(0, 0, 0, smCurMenu);
+
+	vcTagList.clear();
+	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
+		vcTagList.push_back(smCurMenu->lpTagPage[i]);
+
+	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+
+	tdItem->TagPage_RefreshItems(&vcTagList.at(0));
+	UpdateSoftMenu();
+	return;
+}
+
+void TDMenu::SoftMenu_Pop()
+{
+	PSOFT_MENU lpCurMenu = { 0 };
+	if (MenuStack[1].fnEnter)
+	{
+		lpCurMenu = &MenuStack[1];
+	}
+
+	smCurMenu = &MenuStack[0];
+
+	if (CHK_FLAGS(lpCurMenu->dwFlags, SMF_FN_LEAVE) && (lpCurMenu->fnLeave))
+		lpCurMenu->fnLeave(0, 0, 0, lpCurMenu);
+
+	smCurMenu->fnEnter(0, 0, 0, smCurMenu);
+
+	vcTagList.clear();
+
+	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
+		vcTagList.push_back(smCurMenu->lpTagPage[i]);
+
+	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+
+	stCurTagPage = &vcTagList.at(0);
+
+	tdItem->TagPage_RefreshItems(stCurTagPage);
+	UpdateSoftMenu();
+}
+
+int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
+{
+	SET_FLAGS(vcTagList.at(dwNewIndex).dwFlags, SM_ISFOCUS);
+
+	tdItem->TagPage_RefreshItems(&vcTagList.at(dwNewIndex));
+	UpdateSoftMenu();
+
+	return 0;
+}
+
+HWND TDMenu::GetItemHwnd()
+{
+	return tdItem->m_hWnd;
+}
+
+PSOFT_SUB_ITEM TDMenu::GetSoftSubItem(int index)
+{
+	return tdItem->GetItemByIndex(index);
 }
 
 // TDMenu 消息处理程序
@@ -391,12 +450,23 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
-	// TODO:  在此添加您专用的创建代码	
-	memset(&lpMenuStack[1], 0, sizeof(PSOFT_MENU) * 255);
 
-	//设置软菜单的Z序
-	this->SetWindowPos(&wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+	// TODO:  在此添加您专用的创建代码	
+	memset(&MenuStack[1], 0, sizeof(PSOFT_MENU) * 255);
+	MenuStack[0] = menuRoot;
+	smCurMenu = &MenuStack[0];
+
+	this->SetWindowPos(&wndTop, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);	//设置软菜单的Z序
+
+	SOFT_TAG_PAGE stTagPage = { 0 };
+
+	for (size_t i = 0; i < MenuStack[0].dwNumOfTagPages; i++)
+	{
+		stTagPage = MenuStack[0].lpTagPage[i];
+		vcTagList.push_back(stTagPage);
+	}
+	stCurTagPage = &vcTagList.at(0);
+	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
 
 	//创建画笔
 	hPen_Gray = CreatePen(PS_SOLID, 1, RGB(1, 107, 161));
@@ -450,12 +520,10 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	hFont_cfg2 = CreateFontIndirectA(&logFont);
 	if (hFont_cfg2 == NULL)
 		hFont_cfg2 = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
-	
+
 	tdItem = new TDItem(MenuStack[0].lpTagPage);
 	tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
 		16, 40, wWidth_SoftMenu - (WIDTH_SUBMENU + 4), wHeight_SoftMenu - 58, this->GetSafeHwnd(), NULL, lpCreateStruct->hInstance);
-
-	hwSoftItem = tdItem->m_hWnd;
 
 	if (tdItem)
 	{
@@ -472,202 +540,141 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	// TODO: 在此添加专用代码和/或调用基类
 	switch (message)
 	{
-	case WM_TIMER:
-	{
-		wndTDRCHK();
-		SizeMainWnd(TRUE);
-		PhysEventHook();
-
-		KillTimer(0x1);
-		break;
-	}
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		CDC *hDC = BeginPaint(&ps), *hCDC = new CDC;
-		BOOL blCDC = TRUE;
-		HBITMAP hBM;
-		RECT rect;
-		int cx, cy;
-
-		if (hDC == NULL)
-			break;
-
-		GetClientRect(&rect);
-		cx = rect.right - rect.left;
-		cy = rect.bottom - rect.top;
-
-		//尝试使用双缓冲
-		hCDC->CreateCompatibleDC(hDC);
-
-		//判断双缓冲
-		if (hCDC == NULL)
-		{
-			hCDC = hDC;
-			blCDC = FALSE;
-		}
-		else if (hBM = CreateCompatibleBitmap(hDC->m_hDC, cx, cy))
-		{
-			hCDC->SelectObject(hBM);
-			DeleteObject(hBM);
-		}
-		else
-		{
-			hCDC->DeleteDC();
-			hCDC = hDC;
-			blCDC = FALSE;
-		}
-
-		//绘制软菜单外边框
-		hCDC->SelectObject(hBrush_Dark);
-		hCDC->Rectangle(rect.left - 20, rect.top, rect.right, rect.bottom);
-
-		//绘制
-		DSM_Title(hCDC, &ps);
-		DSM_TagPage(hCDC, &ps);
-
-		if (blCDC)
-		{
-			hDC->BitBlt(rect.left, rect.top, cx, cy, hCDC, rect.left, rect.top, SRCCOPY);
-			hCDC->DeleteDC();
-		}
-
-		EndPaint(&ps);
-	}
-	case WM_ERASEBKGND:
-		return TRUE;
-
-	case WM_LBUTTONDOWN:
-	{
-		int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
-
-		SetFocus();
-
-		if ((px >= 0) && (px < 2))
-		{
-			nClickState = 0;
-
-			if (!blCapture)
+		case WM_TIMER:
 			{
-				SetCapture();
-				blCapture = TRUE;
-				return 0;
+				wndTDRCHK();
+				SizeMainWnd(TRUE);
+				PhysEventHook();
+
+				KillTimer(0x1);
+				break;
 			}
-		}
-		else if (HitRect(rcRetButton, px, py))
-			nClickState = 5;
-		else if (HitRect(rcMenuButton, px, py))
-		{
-			PSOFT_MENU lpSoftMenu = GetCurrentSoftMenu();
-			BOOL blNone = TRUE;
-
-			for (DWORD i = 0; i < lpSoftMenu->dwNumOfTagPages; i++)
+		case WM_PAINT:
 			{
-				if (HitRect(lpSoftMenu->lpTagPage[i].rect, px, py))
-				{
-					nClickState = 20 + (int)i;
-					blNone = FALSE;
+				PAINTSTRUCT ps;
+				CDC *hDC = BeginPaint(&ps), *hCDC = new CDC;
+				BOOL blCDC = TRUE;
+				HBITMAP hBM;
+				RECT rect;
+				int cx, cy;
+
+				if (hDC == NULL)
 					break;
-				}
-			}
 
-			if (blNone)
+				GetClientRect(&rect);
+				cx = rect.right - rect.left;
+				cy = rect.bottom - rect.top;
+
+				//尝试使用双缓冲
+				hCDC->CreateCompatibleDC(hDC);
+
+				//判断双缓冲
+				if (hCDC == NULL)
+				{
+					hCDC = hDC;
+					blCDC = FALSE;
+				}
+				else if (hBM = CreateCompatibleBitmap(hDC->m_hDC, cx, cy))
+				{
+					hCDC->SelectObject(hBM);
+					DeleteObject(hBM);
+				}
+				else
+				{
+					hCDC->DeleteDC();
+					hCDC = hDC;
+					blCDC = FALSE;
+				}
+
+				//绘制软菜单外边框
+				hCDC->SelectObject(hBrush_Dark);
+				hCDC->Rectangle(rect.left - 20, rect.top, rect.right, rect.bottom);
+
+				//绘制
+				DSM_Title(hCDC, &ps);
+				DSM_TagPage(hCDC, &ps);
+
+				if (blCDC)
+				{
+					hDC->BitBlt(rect.left, rect.top, cx, cy, hCDC, rect.left, rect.top, SRCCOPY);
+					hCDC->DeleteDC();
+				}
+
+				EndPaint(&ps);
+			}
+		case WM_ERASEBKGND:
+			return TRUE;
+		case WM_LBUTTONUP:
+			{
+				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
 				nClickState = 0;
-		}
-		else
-		{
-			nClickState = 0;
-			UpdateSoftMenu();
-		}
-		break;
-	}
-	case WM_LBUTTONUP:
-	{
-		int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
-
-		if (blCapture)
-		{
-			nClickState = 0;
-			UpdateSoftMenu();
-
-			ReleaseCapture();
-			blCapture = FALSE;
-			SetFocus();
-			return 0;
-		}
-		else if (HitRect(rcMenuButton, px, py))
-		{
-			PSOFT_MENU lpSoftMenu = GetCurrentSoftMenu();
-			BOOL blNone = TRUE;
-
-			for (DWORD i = 0; i < lpSoftMenu->dwNumOfTagPages; i++)
-			{
-				if (HitRect(lpSoftMenu->lpTagPage[i].rect, px, py))
+				if (HitRect(rcMenuButton, px, py))
 				{
-					if (nClickState == 20 + (int)i)
+					BOOL blNone = TRUE;
+
+					for (DWORD i = 0; i < vcTagList.size(); i++)
 					{
-						nClickState = 0;
-						TagPage_SetIndex(i);
+						if (HitRect(vcTagList.at(i).rect, px, py))
+						{
+							TagPage_SetIndex(i);
+							blNone = FALSE;
+							SetFocus();
+							return 0;
+						}
 					}
-					blNone = FALSE;
-					break;
+					SetFocus();
+					return 0;
 				}
+				else if (HitRect(rcRetButton, px, py))
+				{
+					nClickState = 5;
+					SoftMenu_Reset();
+					TagPage_SetIndex(0);
+					SetFocus();
+					return 0;
+				}
+				else
+				{
+					UpdateSoftMenu();
+					SetFocus();
+					return 0;
+				}
+				break;
 			}
-			SetFocus();
-			return 0;
-		}
-		else if (HitRect(rcRetButton, px, py))
-		{
-			nClickState = 0;
-			SoftMenu_Reset();
+		case WM_MOUSELEAVE:
+			{
+				ReleaseCapture();
+				blCapture = FALSE;
+				break;
+			}
+		case WM_LBUTTONDBLCLK:
+			{
+				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
+				RECT rect;
 
-			TagPage_SetIndex(0);
+				rect.left = 2;
+				rect.top = 2;
+				rect.right = wWidth_SoftMenu - 4;
+				rect.bottom = 32;
 
-			SetFocus();
-			return 0;
-		}
-		else
-		{
-			nClickState = 0;
-			UpdateSoftMenu();
-			SetFocus();
-			return 0;
-		}
-		break;
-	}
-	case WM_MOUSELEAVE:
-	{
-		ReleaseCapture();
-		blCapture = FALSE;
-		break;
-	}
-	case WM_LBUTTONDBLCLK:
-	{
-		int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
-		RECT rect;
+				if (HitRect(rect, px, py))
+					SoftMenu_Pop();
+				break;
+			}
+		case WM_SETFOCUS:
+			{
+				SetFocus();
+				break;
+			}
+		case WM_SWITCH_SUBMENU:
+			{
+				if (lParam)
+					SoftMenu_Switch((PSOFT_MENU)lParam, wParam, 0);
+				break;
+			}
 
-		rect.left = 2;
-		rect.top = 2;
-		rect.right = wWidth_SoftMenu - 4;
-		rect.bottom = 32;
-
-		if (HitRect(rect, px, py))
-			SoftMenu_Pop();
-		break;
-	}
-	case WM_SETFOCUS:
-	{
-		SetFocus();
-		break;
-	}
-	case WM_SWITCH_SUBMENU:
-	{
-		if (lParam)
-			SoftMenu_Switch((PSOFT_MENU)lParam, wParam, 0);
-		break;
-	}
-	default:
-		break;
+		default:
+			break;
 	}
 
 	return CWnd::WindowProc(message, wParam, lParam);

@@ -28,7 +28,6 @@ extern HOOK_PTR HookPtr[];
 extern CWnd *cwDrawRect;
 
 extern HWND hwSoftMenu, hwSoftMenu2;
-extern HWND hwSoftItem;
 extern HWND hwToolbar;
 extern HWND hwMainWnd;
 
@@ -40,7 +39,6 @@ extern HBITMAP hBmp_Checked, hBmp_Unchecked;
 
 //菜单栈
 extern SOFT_MENU menuRoot;
-extern SOFT_MENU lpMenuStack[256];
 extern BYTE btMenuIndex;
 extern DWORD dwTagPageIndex;
 
@@ -119,31 +117,8 @@ int MakeUnitStringW(void *lpInput, LPWSTR lpWText, int nMax, LPCSTR lpUnitChar);
 void PSTMSG_432_2();
 
 
-PSOFT_MENU GetCurrentSoftMenu();
 LPCWSTR GetCurrentSoftMenuTitle();
 LPCWSTR GetCurrentSoftMenuTitleByIndex(int nIndex);
-
-
-void SoftItem_ActivationItem(PSOFT_SUB_ITEM lpSubItem);
-
-void SoftItem_ActivationItemByOffsetIndex(PSOFT_SUB_ITEM lpSubItem, int nIndex);
-
-PSOFT_SUB_ITEM SoftItem_GetFocusItem();
-
-PSOFT_SUB_ITEM SoftItem_GetLastFocusItem();
-
-int SoftItem_SetFocusValue(DWORD dwNewFocus, DWORD dwNewFlags);
-
-
-int SoftItem_InvalidLastFocus();
-
-int SoftItem_SetFocus(DWORD dwNewFocus, DWORD dwNewFlags);
-
-int SoftItem_PrevItem();
-
-int SoftItem_NextItem();
-
-PSOFT_TAG_PAGE SoftItem_GetCurrentTagPage();
 
 int SoftItem_Finetune(PSOFT_SUB_ITEM lpSubItem, int nDelta, int nCount);
 
@@ -154,19 +129,6 @@ DWORD TagPage_AddItem(PSOFT_TAG_PAGE lpTagPage, PSOFT_SUB_ITEM lpSubItem);
 
 DWORD TagPage_FreeItem(PSOFT_TAG_PAGE lpTagPage);
 
-int TagPage_SetIndex(DWORD dwNewIndex);
-
-int TagPage_Prev();
-
-int TagPage_Next();
-
-
-void SoftMenu_Reset();
-
-void SoftMenu_Push(PSOFT_MENU lpSoftMenu);
-
-void SoftMenu_Pop();
-
 void SizeMainWnd(BOOL blSync);
 
 
@@ -174,10 +136,8 @@ void SizeMainWnd(BOOL blSync);
 void * TagPage_ShowHelp(PSOFT_SUB_ITEM lpSubPage);
 
 //刷新当前标签页的项目
-int TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage, BOOL blReload);
 int TagPage_RefreshItems(BOOL blReload);
-//更新当前项目在窗口的相对位置
-int TagPage_UpdateItemsPos(DWORD dwFlags);
+
 
 //创建工具栏
 int Toolbar_Create(HWND hParent);

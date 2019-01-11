@@ -11,6 +11,9 @@
 #ifndef _INC_COMMCTRL
 #include <commctrl.h>
 #endif
+//Soft_Menu Flags
+#define SM_ISFOCUS				0x00100000		//设置当前标签为活动页;
+
 
 //Sub Item Flags
 #define SIF_ISMENU                  0x00000001      //条目点击后是个SOFT_MENU,进入下一级菜单
@@ -27,6 +30,10 @@
 #define SIF_FN_UPDATEDATA           0x00040000      //存在更新数据的事件过程
 #define SIF_FN_SETFOCUS				0x00100000
 #define SIF_FN_SWITCH				0x00200000		//专门应对需要在点击前获取动态this指针的。所以需要这个来指示先执行自定义函数 然后才点击
+#define SIF_ISFOCUS					0x00400000
+#define SIF_ATCTION					0x00800000
+
+
 
 //Sub Item Attributes
 #define SIA_FULLLINE                0x00000001      //条目绘制为整行 (独占一行)

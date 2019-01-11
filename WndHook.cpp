@@ -4,7 +4,6 @@
 HHOOK hhkcwrp_MainWnd = NULL;
 HHOOK hhkcwp_MainWnd = NULL;
 
-extern HWND hwSoftItem;
 extern WORD wWidth_MainWnd, wHeight_MainWnd;
 
 void wndhk_SoftItem_FineTune(LPCWPRETSTRUCT lpCWPR, LPNMUPDOWN lpNMUD, PSOFT_SUB_ITEM lpSubItem, DWORD dwFlags)
@@ -89,13 +88,21 @@ void wndhk_SoftItem_OnNotify(LPCWPRETSTRUCT lpCWPR, PSOFT_SUB_ITEM lpSubItem)
 
 void wndhk_OnCommand(LPCWPRETSTRUCT lpCWPR)
 {
+	if (cwMenuWnd == 0 || cwMenuWnd2 == 0)
+		return;
+
 	HWND hParentWnd = GetParent(lpCWPR->hwnd);
 
-	if (hParentWnd == hwSoftItem)
-	{
-		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
-		PSOFT_SUB_ITEM lpSubItem2 = GetSoftItemByIndex(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
+	PSOFT_SUB_ITEM lpSubItem2 = NULL;
 
+	if (hParentWnd==cwMenuWnd->GetItemHwnd())
+		lpSubItem2 = cwMenuWnd->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	else if(hParentWnd==cwMenuWnd2->GetItemHwnd())
+		lpSubItem2 = cwMenuWnd2->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	
+	if (lpSubItem2)
+	{
 		if (lpSubItem != lpSubItem2)
 			lpSubItem = NULL;
 
@@ -106,13 +113,21 @@ void wndhk_OnCommand(LPCWPRETSTRUCT lpCWPR)
 
 void wndhk_OnNotify(LPCWPRETSTRUCT lpCWPR)
 {
+	if (cwMenuWnd == 0 || cwMenuWnd2 == 0)
+		return;
+
 	HWND hParentWnd = GetParent(lpCWPR->hwnd);
 
-	if (hParentWnd == hwSoftItem)
-	{
-		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
-		PSOFT_SUB_ITEM lpSubItem2 = GetSoftItemByIndex(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
+	PSOFT_SUB_ITEM lpSubItem2 = NULL;
 
+	if (hParentWnd == cwMenuWnd->GetItemHwnd())
+		lpSubItem2 = cwMenuWnd->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	else if (hParentWnd == cwMenuWnd2->GetItemHwnd())
+		lpSubItem2 = cwMenuWnd2->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+
+	if (lpSubItem2)
+	{
 		if (lpSubItem != lpSubItem2)
 			lpSubItem = NULL;
 
@@ -148,51 +163,6 @@ LRESULT CALLBACK cwrphk_MainWnd(int nCode, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 		wndhk_OnNotify(lpCWPR);
 		break;
-
-	case WM_ACTIVATE:
-	{
-		//if ((lpCWPR->hwnd == hwMainWnd))
-		//	SetFocus(hwSoftMenu);
-	}
-	break;
-
-	case WM_SETFOCUS:
-// 	{
-// 		HWND hP1 = GetParent(lpCWPR->hwnd);
-// 		DWORD dwId;
-// 
-// 		if (hP1 == hwSoftItem)
-// 		{
-// 			dwId = GetWindowLong(lpCWPR->hwnd, GWL_ID);
-// 
-// 			if ((dwId >= 1000) && (dwId <= 65535))
-// 			{
-// 				SoftItem_SetFocusValue(dwId - 1000, 0x00);
-// 				SoftItem_InvalidLastFocus();
-// 			}
-// 
-// 			InvalidateRect(lpCWPR->hwnd, NULL, TRUE);
-// 			UpdateWindow(lpCWPR->hwnd);
-// 		}
-// 		else if (GetParent(hP1) == hwSoftItem)
-// 		{
-// 			dwId = GetWindowLong(hP1, GWL_ID);
-// 
-// 			if ((dwId >= 1000) && (dwId <= 65535))
-// 			{
-// 				SoftItem_SetFocusValue(dwId - 1000, 0x01);
-// 				SoftItem_InvalidLastFocus();
-// 			}
-// 
-// 			InvalidateRect(hP1, NULL, TRUE);
-// 			UpdateWindow(hP1);
-// 		}
-// 		else if (hP1 == hwToolbar)
-// 		{
-// 			SetFocus(hwSoftMenu);
-//  		}
-// 	}
-	break;
 	}
 	return CallNextHookEx(hhkcwrp_MainWnd, nCode, wParam, lParam);
 }

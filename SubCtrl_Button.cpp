@@ -33,8 +33,7 @@ int SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWid
 	lpMe->_hWnd = CreateWindowExW(0, WC_BUTTONW, GetSoftItemTextByIndex(lpMe, nLangId),
 		WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) |
 		((lpMe->dwStyle == SIS_ButtonEx) ? BS_OWNERDRAW : 0),
-		x, y, nWidth, nHeight,
-		hWnd, NULL, hMod, NULL);
+		x, y, nWidth, nHeight, hWnd, NULL, hMod, NULL);
 
 	//带扩展标签的按钮
 	if (CHK_FLAGS(lpMe->dwAttributes, SIA_EXLBL) && (lpMe->_hWnd))
@@ -63,9 +62,7 @@ int SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWid
 			0, 0, 0, 0, lpMe->_hWnd, NULL, hMod, NULL);
 
 		if (lpMe->lpOpt[4])
-		{
-			SubCtrl_Button_UpdatePos(lpMe, 0);
-		}
+			SubCtrl_Button_UpdatePos(lpMe);
 	}
 
 	return 0;

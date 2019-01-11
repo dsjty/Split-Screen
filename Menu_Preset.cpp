@@ -113,7 +113,9 @@ void ConfirmPreset()
 	if (DialogBox(hMod, MAKEINTRESOURCE(IDD_PRESET), hwMainWnd, &fndpPreset) == IDYES)
 	{		
 		OrigSoftMenu_ItemClicked2(CA_PRESET, TA_PRESET, 0);
-		SoftMenu_Reset();
+		cwMenuWnd->SoftMenu_Reset();
+		if (cwMenuWnd2)
+			cwMenuWnd2->SoftMenu_Reset();
 	}
 	bPreset = FALSE;
 }

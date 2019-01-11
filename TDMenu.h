@@ -29,6 +29,13 @@ public:
 	int DrawStretchBitmap(CDC *hDC, CBitmap *hBitmap, LPCRECT lpRect);
 	void UpdateSoftMenu();
 	void SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFlags);
+	void SoftMenu_Reset();
+	void SoftMenu_Pop();
+	int TagPage_SetIndex(DWORD dwNewIndex);//设置当前软菜单中激活的标签页index
+	HWND GetItemHwnd();		//获取菜单窗口的hwnd
+	PSOFT_SUB_ITEM GetSoftSubItem(int index);
+
+
 
 
 protected:
@@ -36,26 +43,27 @@ protected:
 
 
 private:
-	SOFT_MENU smCurMenu;
-	SOFT_TAG_PAGE stCurTagPage;
-	SOFT_SUB_ITEM ssiCurItem;
+	PSOFT_MENU smCurMenu;
+	PSOFT_TAG_PAGE stCurTagPage;
+	PSOFT_SUB_ITEM ssCurItem;
 
 	HWND hwMenuWnd;
 	LOGFONT logFont = { 0 };
-	SOFT_MENU MenuStack[2] = { menuRoot };
+
+	SOFT_MENU MenuStack[2] = { menuRoot };		//菜单栈
+	std::vector<SOFT_TAG_PAGE> vcTagList;		//当前tag列表
+
 	WORD wWidth_SoftMenu = WIDTH_SOFTMENU;
 	WORD wHeight_SoftMenu = 0;
 	TDItem *tdItem = 0;
 	BOOL blCapture = FALSE;
 
 	CRect rcMenuButton, rcRetButton;
-	int nClickState = 0;
+	int nClickState = 0;	//自绘控件的状态 State
 
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-
-
 };
 
 

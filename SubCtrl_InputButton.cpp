@@ -122,7 +122,7 @@ int SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int
 			if (wpfn_InputBox == NULL)
 				wpfn_InputBox = wpTmp;
 		}
-		SubCtrl_InputButton_UpdatePos(lpMe, 0);
+		SubCtrl_InputButton_UpdatePos(lpMe);
 	}
 
 	return 0;

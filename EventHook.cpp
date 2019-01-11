@@ -376,7 +376,6 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 			int lngWidth = (wWidth_SoftMenu - 0.5) / 1.25;
 			SetSoftMenuWidth(lngWidth);
 			ShowWindow(hwSoftMenu, SW_SHOW);
-			SoftItem_SetFocus(0, 0);
 		}
 
 		SizeMainWnd(FALSE);
