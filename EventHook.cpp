@@ -125,6 +125,11 @@ int WINAPI PhysEventHandler_Button(WPARAM wParam, LPARAM lParam)
 int WINAPI PhysEventHandler_Entry(WPARAM wParam, LPARAM lParam)
 {
 	int nRet = 1;
+	HWND hwSoftItem;
+	if (uiCurFocusMenu == 2)
+		hwSoftItem = cwMenuWnd2->GetItemHwnd();
+	else
+		hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 	switch (wParam)
 	{
@@ -238,6 +243,11 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 	
 	LPWORD lpVirtCode = (LPWORD)_lParam;
 	int nRet = 1;
+	TDMenu *temp;
+	if (uiCurFocusMenu == 2)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd;
 
 	switch (LOWORD(*_lParam))
 	{
@@ -246,93 +256,93 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 	case 0x02:
 	case 0x03:
 	case 0x05:
-		PSTMSG(hwSoftItem, WM_REFRESH, 0, 0); 
+		PSTMSG(temp->m_hWnd, WM_REFRESH, 0, 0); 
 		break;
 
 	case 0x04:
-		PSTMSG(hwSoftItem, WM_REFRESH, 0, 0);
+		PSTMSG(temp->m_hWnd, WM_REFRESH, 0, 0);
 		OrigSoftMenu_ItemClicked2(CA_TRIGGER, TA_TRIGGER, 3);
 		OrigSoftMenu_ItemClicked2(CA_TRIGGER, TA_TRIGGER, 2);
 		UpdateSoftMenu();
 		break;
 
 	case 0x06:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMeasurement);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMeasurement);
 		nRet = 0;
 		break;
 
 	case 0x07:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuTracesConfig);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuTracesConfig);
 		nRet = 0;
 		break;
 
 	case 0x08:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 2, (LPARAM)&menuMeasurement);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 2, (LPARAM)&menuMeasurement);
 		nRet = 0;
 		break;
 
 	case 0x09:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuDisplay);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuDisplay);
 		nRet = 0;
 		break;
 
 	case 0x0A:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuAverage);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuAverage);
 		nRet = 0;
 		break;
 
 	case 0x0B:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuCalibration);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuCalibration);
 		nRet = 0;
 		break;
 
 	case 0x0C:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuFrequency);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuFrequency);
 		nRet = 0;
 		break;
 
 	case 0x0D:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuPower);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuPower);
 		nRet = 0;
 		break;
 
 	case 0x0E:
-		if (NULL == IsWindowVisible(hwSoftMenu))
+		if (NULL == IsWindowVisible(temp->GetSafeHwnd()))
 		{
 			nRet = 0;
 			break;
 		}
-		SoftMenu_Pop();
+		temp->SoftMenu_Pop();
 		nRet = 0;
 		break;
 
 	case 0x0F:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuFrequency);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuFrequency);
 		nRet = 0;
 		break;
 
 	case 0x10:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSweepSetup);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSweepSetup);
 		nRet = 0;
 		break;
 
 	case 0x11:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuChannelsConfig);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuChannelsConfig);
 		nRet = 0;
 		break;
 
 	case 0x24:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMarker);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMarker);
 		nRet = 0;
 		break;
 
 	case 0x26:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 5, (LPARAM)&menuMarker);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 5, (LPARAM)&menuMarker);
 		nRet = 0;
 		break;
 
 	case 0x27:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuAnalysis);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuAnalysis);
 		nRet = 0;
 		break;
 
@@ -354,7 +364,7 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 	case 0x32:
 	case 0x33:
 	case 0x3A:
-		if (NULL == IsWindowVisible(hwSoftMenu))
+		if (NULL == IsWindowVisible(temp->GetSafeHwnd()))
 		{
 			nRet = 0;
 			break;
@@ -363,19 +373,19 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 
 	case 0x3C:		//'隐藏/显示'菜单
 	{
-		if (IsWindowVisible(hwSoftMenu))
+		if (IsWindowVisible(temp->GetSafeHwnd()))
 		{
 			wBackupWidth = wWidth_SoftMenu;
 			wWidth_SoftMenu = 0;
 			SetSoftMenuWidth(wWidth_SoftMenu);
-			ShowWindow(hwSoftMenu, SW_HIDE);
+			ShowWindow(temp->GetSafeHwnd(), SW_HIDE);
 		}
 		else
 		{
 			wWidth_SoftMenu = wBackupWidth;
 			int lngWidth = (wWidth_SoftMenu - 0.5) / 1.25;
 			SetSoftMenuWidth(lngWidth);
-			ShowWindow(hwSoftMenu, SW_SHOW);
+			ShowWindow(temp->GetSafeHwnd(), SW_SHOW);
 		}
 
 		SizeMainWnd(FALSE);
@@ -385,12 +395,12 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 	break;
 
 	case 0x3E:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMacroSetup);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuMacroSetup);
 		nRet = 0;
 		break;
 
 	case 0x46:	//帮助
-		if (NULL == IsWindowVisible(hwSoftMenu))
+		if (NULL == IsWindowVisible(temp->GetSafeHwnd()))
 		{
 			nRet = 0;
 			break;
@@ -401,12 +411,12 @@ int WINAPI EventHandler_09(WPARAM *_wParam, LPARAM *_lParam)
 		break;
 
 	case 0x43:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSaveRecall);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSaveRecall);
 		nRet = 0;
 		break;
 
 	case 0x44:
-		PSTMSG(hwSoftMenu, WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSystem);
+		PSTMSG(temp->GetSafeHwnd(), WM_SWITCH_SUBMENU, 0, (LPARAM)&menuSystem);
 		nRet = 0;
 		break;
 

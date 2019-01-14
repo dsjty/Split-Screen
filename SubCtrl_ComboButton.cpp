@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 
-static WNDPROC wpfn_ComboBox = NULL;
 static LRESULT CALLBACK wp_ComboBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 extern CalKit cCalkit;
@@ -51,7 +50,7 @@ int SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int
 				if (wpfn_ComboBox == NULL)
 					wpfn_ComboBox = wpTmp;
 			}
-			SubCtrl_ComboButton_UpdatePos(lpMe, 0);
+			SubCtrl_ComboButton_UpdatePos(lpMe);
 		}
 	}
 	if ((hCombo) && (lpMe->dwNumberOfParams != 0) && (lpMe->lpParams != NULL))
@@ -116,7 +115,13 @@ LRESULT CALLBACK wp_ComboBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		HWND hItem = GetParent(hWnd);
 
-		if (GetParent(hItem) != hwSoftItem)
+		TDMenu *temp = nullptr;
+		if (uiCurFocusMenu == 2)
+			temp = cwMenuWnd2;
+		else
+			temp = cwMenuWnd;
+
+		if (GetParent(hItem) != temp->GetItemHwnd())
 		{
 			if (wpfn_ComboBox)
 				lResult = CallWindowProc(wpfn_ComboBox, hWnd, msg, wParam, lParam);

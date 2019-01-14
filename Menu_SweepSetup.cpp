@@ -952,13 +952,18 @@ SOFT_SUB_ITEM subitemSegment[] =
 int WINAPI fnUpdateData_Trigger(DWORD dwFlags, WPARAM wParam, LPARAM lParam, struct _SOFT_SUB_ITEM *lpSubItem)
 {
 	int nIndex = 0;
+	TDMenu *temp = nullptr;
+	if (uiCurFocusMenu == 2)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd;
 
 	if (lpSubItem->lpOpt[2] == NULL)
 		return -1;
 
 	nIndex = GetSubMenuSelected_Radio(CA_TRIGGER);
 
-	SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
+	temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
 
 	return 0;
 }

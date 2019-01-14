@@ -9,12 +9,14 @@
 
 IMPLEMENT_DYNAMIC(TDItem, CWnd)
 
-TDItem::TDItem()
+TDItem::TDItem() :
+	uiCurMenus(1)
 {
 
 }
 
-TDItem::TDItem(PSOFT_TAG_PAGE CurTagPage)
+TDItem::TDItem(PSOFT_TAG_PAGE CurTagPage,int iSer):
+	uiCurMenus(iSer)
 {
 	stCurTagPage = *CurTagPage;
 	SOFT_SUB_ITEM stSubItem = { 0 };
@@ -598,6 +600,8 @@ LRESULT TDItem::OnCommand_Button(PSOFT_SUB_ITEM lpSubItem, int nItemIndex, int n
 	{
 		case BN_CLICKED:
 			{
+				uiCurFocusMenu = uiCurMenus;
+
 				PopWnd_Destroy(0, TRUE);
 
 				PSTMSG_432_2();
@@ -896,6 +900,48 @@ void TDItem::SoftItem_SetActiveSoftItem(DWORD dwIndex)
 		lpTagPage->dwActiveIndex = (dwIndex == INVALID_INDEX) ? 0 : dwIndex;
 }
 
+void TDItem::SoftItem_ActivationItemByOffsetIndex(PSOFT_SUB_ITEM lpSubItem, int nOffsetIndex)
+{
+	if (lpSubItem == NULL)
+		return;
+
+	if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_GROUP))  //该子条目是一个组的头部
+	{
+		DWORD dwIndex = GetCurrentSoftItemIndex(lpSubItem);
+
+		if (dwIndex == INVALID_INDEX)
+			return;
+
+		if (dwIndex + nOffsetIndex >= ssSumItem.size())
+			return;
+
+		PSOFT_SUB_ITEM lpDestItem = &ssSumItem.at(dwIndex + nOffsetIndex);
+
+		SoftItem_ActivationItem(lpDestItem);
+	}
+	else
+	{
+		PSOFT_SUB_ITEM lpHeaderItem = GetGroupHeader(lpSubItem);
+
+		if (lpHeaderItem)
+		{
+			DWORD dwIndex = GetCurrentSoftItemIndex(lpHeaderItem);
+
+			if (dwIndex == INVALID_INDEX)
+				return;
+
+			if (dwIndex + nOffsetIndex >= ssSumItem.size())
+				return;
+
+			PSOFT_SUB_ITEM lpDestItem = &ssSumItem.at(dwIndex + nOffsetIndex);
+
+			SoftItem_ActivationItem(lpDestItem);
+		}
+	}
+
+	return;
+}
+
 DWORD TDItem::GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem)
 {
 	for (size_t i = 0; i < ssSumItem.size(); i++)
@@ -1170,6 +1216,12 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			{
 				Sleep(0);
+				break;
+			}
+
+		case WM_SETFOCUS:
+			{
+				uiCurFocusMenu = uiCurMenus;
 				break;
 			}
 	}

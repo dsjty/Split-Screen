@@ -8,12 +8,6 @@
 
 #define HEIGHT_DIFF_SOFTMENU        18
 
-extern WORD wWidth_MainWnd, wHeight_MainWnd, wWidth_Toolbar;
-extern HHOOK hhkcwrp_MainWnd, hhkcwp_MainWnd;
-extern HWND hwToolbar;
-extern DWORD dwTopHeight;
-extern DWORD *lpdwTopHeight;
-
 //原区域静态值，为了双开切成全局试试
 short TagPageOrd = -1;
 BOOL blTME = TRUE;
@@ -120,7 +114,7 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	ResetHookPointer(HookPtr[0]);
 
 	cwMainWnd = pParentWnd;
-	hwMainWnd = pParentWnd->m_hWnd;
+	hwMainWnd = pParentWnd->GetSafeHwnd();
 
 
 	
@@ -133,8 +127,8 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 
 	AFX_MODULE_STATE* AFXAPI AfxGetStaticModuleState();
 
-	cwMenuWnd = new TDMenu;
-	cwMenuWnd2 = new TDMenu;
+	cwMenuWnd = new TDMenu(1);
+	cwMenuWnd2 = new TDMenu(2);
 
 	cwMenuWnd->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW , (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
 	hwSoftMenu = cwMenuWnd->GetSafeHwnd();

@@ -1,17 +1,16 @@
 ﻿#include "stdafx.h"
 
 static WNDPROC wpfn_InputBox = NULL;
-static LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 void SetInputType(int nNewType);
 void SetInputItem(PSOFT_SUB_ITEM lpSubItem);
-int WINAPI PhysEventHandler_Entry(WPARAM wParam, LPARAM lParam);
 
 
 //Sub Control :: UpdatePos
 int SubCtrl_InputButton_UpdatePos(PSOFT_SUB_ITEM lpMe)
 {
-	if (lpMe == NULL) return -1;
+	if (lpMe == NULL) 
+		return -1;
 
 	if (lpMe->_hWnd)
 	{
@@ -183,6 +182,11 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 		if (GetParent(hItem) != hwSoftItem || !lpSubItem)
 		{
@@ -235,6 +239,12 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
 
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
+
 		if (GetParent(hItem) != hwSoftItem || !lpSubItem)
 		{
 			if (wpfn_InputBox)
@@ -275,6 +285,11 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 		if (GetParent(hItem) != hwSoftItem)
 		{
@@ -499,6 +514,11 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 		if (GetParent(hItem) != hwSoftItem)
 			break;
@@ -532,6 +552,12 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
+
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 		if (GetParent(hItem) != hwSoftItem)
 			break;
@@ -568,6 +594,12 @@ LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		HWND hItem = GetParent(hWnd);
 		PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hItem, GWL_USERDATA);
 		short nDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+		HWND hwSoftItem = NULL;
+		if (uiCurFocusMenu == 2)
+			hwSoftItem = cwMenuWnd2->GetItemHwnd();
+		else
+			hwSoftItem = cwMenuWnd->GetItemHwnd();
 
 		if (GetParent(hItem) != hwSoftItem || lpSubItem == NULL)
 		{

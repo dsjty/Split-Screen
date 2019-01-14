@@ -1,4 +1,5 @@
 #pragma once
+
 #include "stdafx.h"
 #include "TDItem.h"
 #include "externs.h"
@@ -20,6 +21,8 @@ class TDMenu : public CWnd
 
 public:
 	TDMenu();
+	TDMenu(int const iSer);
+
 	virtual ~TDMenu();
 
 public:
@@ -34,6 +37,8 @@ public:
 	int TagPage_SetIndex(DWORD dwNewIndex);//设置当前软菜单中激活的标签页index
 	HWND GetItemHwnd();		//获取菜单窗口的hwnd
 	PSOFT_SUB_ITEM GetSoftSubItem(int index);
+	int GetCurrMenuSer();
+	PSOFT_TAG_PAGE GetCurTagPage();
 
 
 
@@ -42,7 +47,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 
+public:
+	TDItem *tdItem = NULL;
 private:
+	unsigned int const uiCurMenu;
 	PSOFT_MENU smCurMenu;
 	PSOFT_TAG_PAGE stCurTagPage;
 	PSOFT_SUB_ITEM ssCurItem;
@@ -55,7 +63,7 @@ private:
 
 	WORD wWidth_SoftMenu = WIDTH_SOFTMENU;
 	WORD wHeight_SoftMenu = 0;
-	TDItem *tdItem = 0;
+
 	BOOL blCapture = FALSE;
 
 	CRect rcMenuButton, rcRetButton;

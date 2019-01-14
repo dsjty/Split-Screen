@@ -1,5 +1,7 @@
 #pragma once
+
 #include "stdafx.h"
+#include <vector>
 // TDItem
 
 class TDItem : public CWnd
@@ -8,7 +10,7 @@ class TDItem : public CWnd
 
 public:
 	TDItem();
-	TDItem(PSOFT_TAG_PAGE CurTagPage);
+	TDItem(PSOFT_TAG_PAGE CurTagPage,int iSer);
 	virtual ~TDItem();
 
 public:
@@ -23,6 +25,7 @@ public:
 	int SoftItem_ScrollFocus();
 	void SoftItem_ActivationItem(PSOFT_SUB_ITEM lpSubItem);//设置激活项目的index
 	void SoftItem_SetActiveSoftItem(DWORD dwIndex);
+	void SoftItem_ActivationItemByOffsetIndex(PSOFT_SUB_ITEM lpSubItem, int nOffsetIndex);
 	DWORD GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem);
 	PSOFT_SUB_ITEM GetGroupHeader(PSOFT_SUB_ITEM lpSubItem);
 	DWORD GetGroupOffsetIndex(PSOFT_SUB_ITEM lpSubItem);
@@ -35,6 +38,7 @@ public:
 	
 
 private:
+	UINT const uiCurMenus;
 	SOFT_TAG_PAGE stCurTagPage;
 	std::vector<SOFT_SUB_ITEM> ssSumItem;
 
@@ -42,7 +46,6 @@ private:
 	CRect rcItem, rcLastItem;
 	DWORD dwFocusItem = 0, dwLastFocus = 0;
 	DWORD dwFocusFlags = 0;
-	WNDPROC wpfn_InputBox = NULL;
 
 
 protected:

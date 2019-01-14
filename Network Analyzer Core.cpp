@@ -4,9 +4,6 @@
 本文件包含来自于E5062.exe中函数调用的逆向结果及再工程函数
 */
 
-//E5062主窗口宽和高
-WORD wWidth_MainWnd = 0, wHeight_MainWnd = 0;
-
 void UpdateSize_UI();
 
 //************************************

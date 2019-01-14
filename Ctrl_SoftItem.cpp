@@ -26,18 +26,18 @@ SOFT_TAG_PAGE lpCurTagPage = { 0 };
 //************************************
 void * TagPage_ShowHelp(PSOFT_SUB_ITEM lpSubPage)
 {
-	if (&lpCurTagPage && lpCurTagPage.lpReserve[0])
-	{
-		WCHAR wcsTmp[1024];
-		swprintf_s(wcsTmp, 1024, L"%s%s", wcsHelpPath, lpCurTagPage.lpReserve[0]);
-		return ShellExecuteW(NULL, L"open", L"hh.exe", wcsTmp, NULL, SW_SHOW);
-	}
-	else if ((0 != lpSubPage && lpSubPage->dwReserve[1]) || (lpCurTagPage.lpszTagText && lpCurTagPage.lpReserve[1]))
-	{
-		HWND hWnd = FindWindow(NULL, "TD3619");
-		HtmlHelp(hWnd, "D:\\TianDa\\Help\\TD3618D_HELP.chm", HH_HELP_CONTEXT, lpSubPage->dwReserve[1]);
-	}
-	return NULL;
+	//if (&lpCurTagPage && lpCurTagPage.lpReserve[0])
+	//{
+	//	WCHAR wcsTmp[1024];
+	//	swprintf_s(wcsTmp, 1024, L"%s%s", wcsHelpPath, lpCurTagPage.lpReserve[0]);
+	//	return ShellExecuteW(NULL, L"open", L"hh.exe", wcsTmp, NULL, SW_SHOW);
+	//}
+	//else if ((0 != lpSubPage && lpSubPage->dwReserve[1]) || (lpCurTagPage.lpszTagText && lpCurTagPage.lpReserve[1]))
+	//{
+	//	HWND hWnd = FindWindow(NULL, "TD3619");
+	//	HtmlHelp(hWnd, "D:\\TianDa\\Help\\TD3619D_HELP.chm", HH_HELP_CONTEXT, lpSubPage->dwReserve[1]);
+	//}
+	//return NULL;
 }
 
 int SoftItem_Finetune(PSOFT_SUB_ITEM lpSubItem, int nDelta, int nCount)

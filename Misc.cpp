@@ -77,8 +77,6 @@ NAKED int __stdcall fnhk_x13D550(int nVar0)
 typedef void *(__thiscall *func_00906190)(void *lpThis, LPPOINT lpPoint);
 static func_00906190 fn00906190 = (func_00906190)0x00906190;
 
-//extern SOFT_MENU menuMeasurement;
-extern HWND hwSoftMenu, hwSoftMenu2;
 
 int WINAPI fnGetPointX(LPPOINT lpPt, void *lpESI)
 {
@@ -86,7 +84,6 @@ int WINAPI fnGetPointX(LPPOINT lpPt, void *lpESI)
 
 	void *lpBase = (void *)((int)lpESI + 0xE0);
 	LPRECT lpRect;
-	//bool *lpBool;
 	int nIndex = 0;
 
 	do
@@ -227,16 +224,6 @@ NAKED int fnhk_JmpSetTitle()
 	__asm mov eax, priv_Title
 	__asm mov dword ptr[esp + 0x04], eax
 	__asm jmp dword ptr[nOrgAddr_CWnd_SetWindowTextW]
-}
-#endif
-
-//挂钩焦点 (保持E5062程序在激活窗口时,焦点始终在软菜单上)
-#if CF_HOOKFOCUS
-NAKED HWND fnhk_SetFocus()
-{
-	__asm push hwSoftItem
-	__asm call dword ptr[SetFocus]
-	__asm retn
 }
 #endif
 
@@ -513,11 +500,6 @@ BOOL APIENTRY DM_ProcessAttach(HMODULE hModule, DWORD ul_reason_for_call, LPVOID
 	lpOrgJmpTabPtr_09 = *(void **)(BASE + 0x149ED4);
 	nTmp = (int)&__fnhk_Event_09;
 	WriteMemory((void *)(BASE + 0x149ED4), &nTmp, 4);
-#endif
-
-	//挂钩焦点 (保持程序在激活窗口时,焦点始终在软菜单上)
-#if CF_HOOKFOCUS
-	SetOffsetHook((int *)(BASE + 0x96DCDA), &nTmp, (int)&fnhk_SetFocus);
 #endif
 
 	InitLocaleHook();  

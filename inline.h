@@ -1,4 +1,7 @@
 ﻿#pragma once
+#include "SharedData.h"
+#include "TDMenu.h"
+#include "TDItem.h"
 
 #ifndef _INC_WINDOWS
 #include <Windows.h>
@@ -129,70 +132,71 @@ inline void UpdateDataByTagPage(PSOFT_TAG_PAGE lpTagPage)
 	}
 }
 
-//更新控件
+//更新控件....改
 inline void UpdateCurrentItemsAndData()
 {
-	PSOFT_TAG_PAGE lpTagPage = SoftItem_GetCurrentTagPage();
+	DWORD dwIndex;
+	TDMenu *temp = nullptr;
+	if (2 == uiCurFocusMenu)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd2;
 
-	if (lpTagPage)
+
+	for (dwIndex = 0; dwIndex < temp->GetCurTagPage()->dwNumOfSubItems; dwIndex++)
 	{
-		DWORD dwIndex;
-
-		for (dwIndex = 0; dwIndex < lpTagPage->dwNumOfSubItems; dwIndex++)
+		if (CHK_FLAGS(temp->GetSoftSubItem(dwIndex)->dwFlags, SIF_FN_UPDATEDATA) && (temp->GetSoftSubItem(dwIndex)->lpEvent[FNID_UPDATE_DATA]))
 		{
-			if (CHK_FLAGS(lpTagPage->lpSubItem[dwIndex].dwFlags, SIF_FN_UPDATEDATA) && (lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA]))
+			func_ItemEvent_UpdateData fnUpdateData = (func_ItemEvent_UpdateData)temp->GetSoftSubItem(dwIndex)->lpEvent[FNID_UPDATE_DATA];
+			fnUpdateData(0, 0, 0, (temp->GetSoftSubItem(dwIndex)));
+		}
+
+		if ((temp->GetSoftSubItem(dwIndex)->dwStyle == SIS_InputButtonEx) && (temp->GetSoftSubItem(dwIndex)->lpOpt[1]) && (temp->GetSoftSubItem(dwIndex)->lpOpt[4]))
+		{
+			PSOFT_SUB_ITEM lpSubItem = temp->GetSoftSubItem(dwIndex);
+			WCHAR wcsText[MAX_PATH] = { 0 };
+
+			wcsText[0] = 0;
+
+			if (CHK_NOFLAGS(lpSubItem->dwFlags, SIF_NOREPLY) && lpSubItem->lpThis && lpSubItem->lpVTable)
+				OrigSoftMenu_ItemClicked2(lpSubItem->lpThis, lpSubItem->lpVTable, lpSubItem->dwFunctionId);
+
+
+			if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT))
+				GetInputStringObjectW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, NULL);
+
+			else
 			{
-				func_ItemEvent_UpdateData fnUpdateData = (func_ItemEvent_UpdateData)lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA];
-				fnUpdateData(0, 0, 0, &(lpTagPage->lpSubItem[dwIndex]));
+				char szText[MAX_PATH] = { 0 };
+				szText[0] = 0;
+
+				FmtValueToString(lpSubItem->lpOpt[1], szText, MAX_PATH, NULL);
+				MultiByteToWideChar(CP_ACP, 0, szText, -1, wcsText, MAX_PATH);
 			}
 
-			if ((lpTagPage->lpSubItem[dwIndex].dwStyle == SIS_InputButtonEx) && (lpTagPage->lpSubItem[dwIndex].lpOpt[1]) && (lpTagPage->lpSubItem[dwIndex].lpOpt[4]))
-			{
-				PSOFT_SUB_ITEM lpSubItem = &(lpTagPage->lpSubItem[dwIndex]);
-				WCHAR wcsText[MAX_PATH] = { 0 };
+			SetWindowTextW((HWND)lpSubItem->lpOpt[4], wcsText);
+		}
 
-				wcsText[0] = 0;
-
-				if (CHK_NOFLAGS(lpSubItem->dwFlags, SIF_NOREPLY) && lpSubItem->lpThis && lpSubItem->lpVTable)
-					OrigSoftMenu_ItemClicked2(lpSubItem->lpThis, lpSubItem->lpVTable, lpSubItem->dwFunctionId);
-
-
-				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT))
-					GetInputStringObjectW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, NULL);
-
-				else
-				{
-					char szText[MAX_PATH] = { 0 };
-					szText[0] = 0;
-
-					FmtValueToString(lpSubItem->lpOpt[1], szText, MAX_PATH, NULL);
-					MultiByteToWideChar(CP_ACP, 0, szText, -1, wcsText, MAX_PATH);
-				}
-
-				SetWindowTextW((HWND)lpSubItem->lpOpt[4], wcsText);
-			}
-
-			if (lpTagPage->lpSubItem[dwIndex].lpOpt[4])
-			{
-				InvalidateRect((HWND)lpTagPage->lpSubItem[dwIndex].lpOpt[4], NULL, TRUE);
-				UpdateWindow((HWND)lpTagPage->lpSubItem[dwIndex].lpOpt[4]);
-			}
-			else if (lpTagPage->lpSubItem[dwIndex]._hWnd)
-			{
-				InvalidateRect((HWND)lpTagPage->lpSubItem[dwIndex]._hWnd, NULL, TRUE);
-				UpdateWindow((HWND)lpTagPage->lpSubItem[dwIndex]._hWnd);
-			}
+		if (temp->GetSoftSubItem(dwIndex)->lpOpt[4])
+		{
+			InvalidateRect((HWND)temp->GetSoftSubItem(dwIndex)->lpOpt[4], NULL, TRUE);
+			UpdateWindow((HWND)temp->GetSoftSubItem(dwIndex)->lpOpt[4]);
+		}
+		else if (temp->GetSoftSubItem(dwIndex)->_hWnd)
+		{
+			InvalidateRect((HWND)temp->GetSoftSubItem(dwIndex)->_hWnd, NULL, TRUE);
+			UpdateWindow((HWND)temp->GetSoftSubItem(dwIndex)->_hWnd);
 		}
 	}
-
-	InvalidateRect(hwSoftItem, NULL, TRUE);
-	UpdateWindow(hwSoftItem);
+	InvalidateRect(temp->m_hWnd, NULL, TRUE);
+	UpdateWindow(temp->m_hWnd);
 	PopWnd_UpdateInputBox();
 }
 
+//改
 inline LPCWSTR GetSoftItemTextByIndex(PSOFT_SUB_ITEM lpSubItem, int nIndex)
 {
-	if (lpSubItem == NULL) 
+	if (lpSubItem == NULL)
 		return NULL;
 
 	if (lpSubItem->szItemText != NULL)
@@ -200,8 +204,7 @@ inline LPCWSTR GetSoftItemTextByIndex(PSOFT_SUB_ITEM lpSubItem, int nIndex)
 
 	return GetStringByIndex(lpSubItem->lpszItemText, nIndex);
 }
-
-
+//改
 inline LPCWSTR GetActiveItemTextBySoftMenu(PSOFT_MENU lpSoftMenu)
 {
 	if ((lpSoftMenu) && (lpSoftMenu->dwActiveIndex < lpSoftMenu->dwNumOfTagPages))

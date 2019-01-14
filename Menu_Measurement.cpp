@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "SharedData.h"
 
 
 extern SOFT_MENU menuSimth;
@@ -1567,6 +1568,12 @@ int WINAPI fnUpdateData_SParam(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 {
 	int nIndex = 0;
 
+	TDMenu *temp = nullptr;
+	if (uiCurFocusMenu == 2)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd;
+	
 	if (lpSubItem->lpOpt[2] == NULL) 
 		return -1;
 
@@ -1582,10 +1589,10 @@ int WINAPI fnUpdateData_SParam(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 	case 1:
 	case 2:
 	case 3:
-		SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
+		temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
 		break;
 	default:
-		SoftItem_ActivationItemByOffsetIndex(lpSubItem, 0);
+		temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, 0);
 		break;
 	}
 
@@ -1595,6 +1602,12 @@ int WINAPI fnUpdateData_SParam(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 int WINAPI fnUpdateData_Format(DWORD dwFlags, WPARAM wParam, LPARAM lParam, struct _SOFT_SUB_ITEM *lpSubItem)
 {
 	int nIndex = 0;
+
+	TDMenu *temp = nullptr;
+	if (uiCurFocusMenu == 2)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd;
 
 	if (lpSubItem->lpOpt[2] == NULL)
 		return -1;
@@ -1609,7 +1622,7 @@ int WINAPI fnUpdateData_Format(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 	{
 	case 1:
 	case 2:
-		SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
+		temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex);
 		break;
 
 	case 11:
@@ -1618,7 +1631,7 @@ int WINAPI fnUpdateData_Format(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 	case 14:
 	case 15:
 	case 16:
-		SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex - 6);
+		temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, nIndex - 6);
 		break;
 
 	case 3:
@@ -1631,7 +1644,7 @@ int WINAPI fnUpdateData_Format(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 		{
 			if (subitemFormat[3].dwStyle == SIS_ComboButtonEx || subitemFormat[3].dwStyle == SIS_ComboRadioButtonEx)
 				ComboBox_SetCurSel((HWND)subitemFormat[3].lpOpt[4], nIndex - 3);
-			SoftItem_ActivationItemByOffsetIndex(lpSubItem, 3);
+			temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, 3);
 		}
 
 		break;
@@ -1644,13 +1657,13 @@ int WINAPI fnUpdateData_Format(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 		{
 			if (subitemFormat[4].dwStyle == SIS_ComboButtonEx || subitemFormat[4].dwStyle == SIS_ComboRadioButtonEx)
 				ComboBox_SetCurSel((HWND)subitemFormat[4].lpOpt[4], nIndex - 8);
-			SoftItem_ActivationItemByOffsetIndex(lpSubItem, 4);
+			temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, 4);
 		}
 
 		break;
 
 	default:
-		SoftItem_ActivationItemByOffsetIndex(lpSubItem, 0);
+		temp->tdItem->SoftItem_ActivationItemByOffsetIndex(lpSubItem, 0);
 		break;
 	}
 

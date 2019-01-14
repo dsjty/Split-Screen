@@ -118,7 +118,6 @@ void PSTMSG_432_2();
 
 
 LPCWSTR GetCurrentSoftMenuTitle();
-LPCWSTR GetCurrentSoftMenuTitleByIndex(int nIndex);
 
 int SoftItem_Finetune(PSOFT_SUB_ITEM lpSubItem, int nDelta, int nCount);
 

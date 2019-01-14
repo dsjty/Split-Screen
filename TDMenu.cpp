@@ -11,13 +11,16 @@ extern WORD wWidth_MainWnd, wHeight_MainWnd, wWidth_Toolbar;
 
 IMPLEMENT_DYNAMIC(TDMenu, CWnd)
 
-TDMenu::TDMenu()
+TDMenu::TDMenu() :
+	uiCurMenu(1)
 {
-#ifndef _WIN32_WCE
-	EnableActiveAccessibility();
-#endif
-
 }
+
+TDMenu::TDMenu(int const iSer) :
+	uiCurMenu(iSer)
+{
+}
+
 
 TDMenu::~TDMenu()
 {
@@ -437,12 +440,22 @@ int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
 
 HWND TDMenu::GetItemHwnd()
 {
-	return tdItem->m_hWnd;
+	return tdItem->GetSafeHwnd();
 }
 
 PSOFT_SUB_ITEM TDMenu::GetSoftSubItem(int index)
 {
 	return tdItem->GetItemByIndex(index);
+}
+
+int TDMenu::GetCurrMenuSer()
+{
+	return uiCurMenu;
+}
+
+PSOFT_TAG_PAGE TDMenu::GetCurTagPage()
+{
+	return stCurTagPage;
 }
 
 // TDMenu 消息处理程序
@@ -521,7 +534,7 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (hFont_cfg2 == NULL)
 		hFont_cfg2 = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
 
-	tdItem = new TDItem(MenuStack[0].lpTagPage);
+	tdItem = new TDItem(MenuStack[0].lpTagPage, uiCurMenu);
 	tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
 		16, 40, wWidth_SoftMenu - (WIDTH_SUBMENU + 4), wHeight_SoftMenu - 58, this->GetSafeHwnd(), NULL, lpCreateStruct->hInstance);
 
@@ -549,6 +562,7 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				KillTimer(0x1);
 				break;
 			}
+
 		case WM_PAINT:
 			{
 				PAINTSTRUCT ps;
@@ -602,10 +616,14 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 				EndPaint(&ps);
 			}
+
 		case WM_ERASEBKGND:
 			return TRUE;
+
 		case WM_LBUTTONUP:
 			{
+				uiCurFocusMenu = uiCurMenu;
+
 				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
 				nClickState = 0;
 				if (HitRect(rcMenuButton, px, py))
@@ -641,14 +659,18 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			}
+
 		case WM_MOUSELEAVE:
 			{
 				ReleaseCapture();
 				blCapture = FALSE;
 				break;
 			}
+
 		case WM_LBUTTONDBLCLK:
 			{
+				uiCurFocusMenu = uiCurMenu;
+
 				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
 				RECT rect;
 
@@ -661,15 +683,24 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					SoftMenu_Pop();
 				break;
 			}
+
 		case WM_SETFOCUS:
 			{
+				uiCurFocusMenu = uiCurMenu;
 				SetFocus();
 				break;
 			}
+
 		case WM_SWITCH_SUBMENU:
 			{
 				if (lParam)
 					SoftMenu_Switch((PSOFT_MENU)lParam, wParam, 0);
+				break;
+			}
+
+		case WM_REFRESH:
+			{
+				tdItem->TagPage_RefreshItems(0);
 				break;
 			}
 

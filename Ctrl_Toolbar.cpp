@@ -18,15 +18,11 @@ extern WORD wWidth_MainWnd, wHeight_MainWnd;
 extern WORD wWidth_SoftMenu;
 
 
-HWND hwToolbar = NULL;
 static HANDLE hThread = NULL;
 static DWORD dwThreadFlags = 0;
 static int nLeft = START_LEFT, nLeftEx = START_LEFT;
 static int nTop = START_TOP, nTopEx = START_TOPEX;
 
-WORD wWidth_Toolbar = 0;
-DWORD dwTopHeight = 0;
-DWORD *lpdwTopHeight = NULL;
 static void *lpOrgInputObj = NULL;
 
 void SetToolbarHeight(WORD wHeight);

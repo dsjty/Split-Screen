@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "SharedData.h"
 
 const LPCSTR szTRACking[] =
 {
@@ -491,6 +492,13 @@ int WINAPI func_PWUP_Marker(PSOFT_SUB_ITEM lpSubItem, PPWUPS lpPWUPS, DWORD dwFl
 	int nCurIndex = 0;
 	bool blRef = false;
 
+	TDMenu *temp;
+	if (2 == uiCurFocusMenu)
+		temp = cwMenuWnd2;
+	else
+		temp = cwMenuWnd;
+
+
 	if (lpSubItem->lpOpt[12])
 	{
 		lpSubItem->lpOpt[2] = (void*)((DWORD)lpSubItem->lpOpt[2] - BASE);
@@ -539,7 +547,7 @@ int WINAPI func_PWUP_Marker(PSOFT_SUB_ITEM lpSubItem, PPWUPS lpPWUPS, DWORD dwFl
 			EnableWindow(subitemMarker[11]._hWnd, TRUE);
 		}
 
-		SoftItem_ActivationItem(lpPWUPS->lpSubItem);
+		temp->tdItem->SoftItem_ActivationItem(lpPWUPS->lpSubItem);
 	}
 	break;
 

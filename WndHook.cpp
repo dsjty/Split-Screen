@@ -1,9 +1,5 @@
 ﻿#include "stdafx.h"
 
-//窗口hook句柄
-HHOOK hhkcwrp_MainWnd = NULL;
-HHOOK hhkcwp_MainWnd = NULL;
-
 extern WORD wWidth_MainWnd, wHeight_MainWnd;
 
 void wndhk_SoftItem_FineTune(LPCWPRETSTRUCT lpCWPR, LPNMUPDOWN lpNMUD, PSOFT_SUB_ITEM lpSubItem, DWORD dwFlags)

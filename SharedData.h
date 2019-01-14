@@ -1,5 +1,12 @@
 #pragma once
 
+#include "TDMenu.h"
+#include "TDItem.h"
+#include "CalKit.h"
+
+//当前活动的菜单窗口
+unsigned int uiCurFocusMenu = 1;
+
 //CWnd对象
 CWnd *cwMainWnd = (CWnd *)NULL;
 
@@ -16,18 +23,23 @@ static int nInputType = 0;
 static HWND hWnd_PopWnd = NULL, hInputEdit = NULL, hBtnEnter = NULL, hBtnClose = NULL, hUpDn1 = NULL, hUpDn2 = NULL;
 CalKit cCalkit;
 
+WORD wWidth_MainWnd, wHeight_MainWnd, wWidth_Toolbar;
+HHOOK hhkcwrp_MainWnd, hhkcwp_MainWnd;
+HWND hwToolbar;
+DWORD dwTopHeight;
+DWORD *lpdwTopHeight;
 
 
 static PSOFT_SUB_ITEM lpInputItem = NULL;
 static WNDPROC wpfn_InputEdit = NULL;
-static WNDPROC wpfn_InputBox = NULL;
 static WNDPROC wpfn_ComboBox = NULL;
 
 
 void SetInputType(int nNewType);
 void SetInputItem(PSOFT_SUB_ITEM lpSubItem);
 
-
+LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK wp_InputBox(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //子控件 :: 更新位置
 int SubCtrl_Button_UpdatePos(PSOFT_SUB_ITEM lpMe);
