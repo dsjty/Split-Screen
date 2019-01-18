@@ -80,3 +80,7 @@
 #include "TDMenu.h"
 #include "TDItem.h"
 #include "SharedData.h"
+
+#include "TD_Button.h"
+#include "TD_ComBoBtn.h"
+#include "TD_Edit.h"

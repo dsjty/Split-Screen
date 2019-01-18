@@ -137,11 +137,6 @@ LPCWSTR GetStringByIndex(LPCWSTR lpWStr, int nIndex)
 	return lpRetWStr;
 }
 
-LPCWSTR GetStringByIndex(LPCWSTR lpWStr, int nIndex, int lParam)
-{
-	return lpWStr;
-}
-
 int GetButtonStateIndex(const char *ulpszCmd, void *lpUnk, int *lpIndex, int nVars)
 {
 	if (!ulpszCmd || !lpIndex)

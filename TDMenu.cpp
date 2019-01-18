@@ -129,8 +129,8 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 
 		hBrush = hBmp_Button2;
 
-		CHK_FLAGS(vcTagList.at(dwTmp).dwFlags, SM_ISFOCUS);
-		nPushed++;
+		if (CHK_FLAGS(vcTagList.at(dwTmp).dwFlags, SM_ISFOCUS))
+			nPushed++;
 
 		if (nPushed)
 		{
@@ -171,11 +171,9 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 void TDMenu::DrawSolidEdge(CDC *hDC, LPRECT lpRect, HBITMAP hBrush, int nFlags, LPCWSTR lpWStr)
 {
 	RECT rect = *lpRect;
-	CBitmap hFillBrush;
-	hFillBrush.Attach(hBrush);
 
 	rect.left -= 2;
-	DrawStretchBitmap(hDC, &hFillBrush, &rect);
+	DrawStretchBitmap(hDC->m_hDC, hBrush, &rect);
 	rect.left += 2;
 
 	rect.left += 2;
@@ -230,102 +228,6 @@ void TDMenu::DrawSolidEdge(CDC *hDC, LPRECT lpRect, HBITMAP hBrush, int nFlags, 
 			}
 		}
 	}
-
-	//绘制上箭头
-	if (nFlags & 0x02)
-	{
-		int nWidth = rect.right - rect.left;
-		int nHeight = rect.bottom - rect.top;
-
-		if ((nWidth >= 24) && (nHeight >= 10))
-		{
-			int nCenter = nWidth / 2;
-			int nTop = (nHeight - 6) / 2;
-
-			if (nFlags & 0x08)
-				hDC->SelectObject(hPen_Gray);
-			else
-				hDC->SelectObject((HPEN)GetStockObject(BLACK_PEN));
-
-			hDC->MoveTo(rect.left + nCenter, rect.top + nTop);
-			hDC->LineTo(rect.left + nCenter + 1, rect.top + nTop);
-
-			hDC->MoveTo(rect.left + nCenter - 2, rect.top + nTop + 1);
-			hDC->LineTo(rect.left + nCenter + 3, rect.top + nTop + 1);
-
-			hDC->MoveTo(rect.left + nCenter - 4, rect.top + nTop + 2);
-			hDC->LineTo(rect.left + nCenter + 5, rect.top + nTop + 2);
-
-			hDC->MoveTo(rect.left + nCenter - 6, rect.top + nTop + 3);
-			hDC->LineTo(rect.left + nCenter + 7, rect.top + nTop + 3);
-
-			hDC->MoveTo(rect.left + nCenter - 8, rect.top + nTop + 4);
-			hDC->LineTo(rect.left + nCenter + 9, rect.top + nTop + 4);
-
-			hDC->MoveTo(rect.left + nCenter - 10, rect.top + nTop + 5);
-			hDC->LineTo(rect.left + nCenter + 11, rect.top + nTop + 5);
-		}
-	}
-
-	//绘制下箭头
-	if (nFlags & 0x04)
-	{
-		int nWidth = rect.right - rect.left;
-		int nHeight = rect.bottom - rect.top;
-
-		if ((nWidth >= 24) && (nHeight >= 10))
-		{
-			int nCenter = nWidth / 2;
-			int nTop = (nHeight - 6) / 2;
-
-			if (nFlags & 0x08)
-				hDC->SelectObject(hPen_Gray);
-			else
-				hDC->SelectObject((HPEN)GetStockObject(BLACK_PEN));
-
-			hDC->MoveTo(rect.left + nCenter - 10, rect.top + nTop);
-			hDC->LineTo(rect.left + nCenter + 11, rect.top + nTop);
-
-			hDC->MoveTo(rect.left + nCenter - 8, rect.top + nTop + 1);
-			hDC->LineTo(rect.left + nCenter + 9, rect.top + nTop + 1);
-
-			hDC->MoveTo(rect.left + nCenter - 6, rect.top + nTop + 2);
-			hDC->LineTo(rect.left + nCenter + 7, rect.top + nTop + 2);
-
-			hDC->MoveTo(rect.left + nCenter - 4, rect.top + nTop + 3);
-			hDC->LineTo(rect.left + nCenter + 5, rect.top + nTop + 3);
-
-			hDC->MoveTo(rect.left + nCenter - 2, rect.top + nTop + 4);
-			hDC->LineTo(rect.left + nCenter + 3, rect.top + nTop + 4);
-
-			hDC->MoveTo(rect.left + nCenter, rect.top + nTop + 5);
-			hDC->LineTo(rect.left + nCenter + 1, rect.top + nTop + 5);
-		}
-	}
-}
-
-int TDMenu::DrawStretchBitmap(CDC *hDC, CBitmap *hBitmap, LPCRECT lpRect)
-{
-	if (hDC == NULL || hBitmap == NULL || lpRect == NULL)
-		return -1;
-
-	HDC hCDC = CreateCompatibleDC(hDC->m_hDC);
-	BITMAP bmp;
-
-	if (hCDC == NULL)
-		return -2;
-
-	hBitmap->GetBitmap(&bmp);
-	SelectObject(hCDC, hBitmap);
-
-	SetStretchBltMode(hDC->m_hDC, HALFTONE);
-
-	StretchBlt(hDC->m_hDC,
-		lpRect->left, lpRect->top, lpRect->right - lpRect->left, lpRect->bottom - lpRect->top,
-		hCDC, 0, 0, bmp.bmWidth, bmp.bmHeight, SRCCOPY);
-
-	DeleteDC(hCDC);
-	return 0;
 }
 
 void TDMenu::UpdateSoftMenu()
@@ -346,13 +248,10 @@ void TDMenu::SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFl
 		if (CHK_FLAGS(lpTSoftMenu->dwFlags, SMF_FN_LEAVE) && (lpTSoftMenu->fnLeave))
 			lpTSoftMenu->fnLeave(0, 0, 0, lpTSoftMenu);
 	}
-	if (lpSoftMenu->fnEnter != MenuStack[1].fnEnter)
-	{
-		MenuStack[1] = *lpSoftMenu;
-		smCurMenu = &MenuStack[1];
-	}
-	else
-		smCurMenu = &MenuStack[0];
+
+	MenuStack[1] = *lpSoftMenu;
+
+	smCurMenu = &MenuStack[1];
 
 	if (CHK_FLAGS(smCurMenu->dwFlags, SMF_FN_ENTER) && (smCurMenu->fnEnter))
 		smCurMenu->fnEnter(0, 0, 0, smCurMenu);
@@ -362,6 +261,9 @@ void TDMenu::SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFl
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
+	iLastMenuSer = iCurMenuSer;
+	iCurMenuSer = 0;
+	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
 	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
 
 	stCurTagPage = &vcTagList.at(0);
@@ -369,8 +271,8 @@ void TDMenu::SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFl
 	if (IsWindowVisible() == FALSE)
 		SNDMSG(hwMainWnd, 0x0432, 9, MAKELPARAM(0x003B, 0x0001));
 
-	tdItem->TagPage_RefreshItems(stCurTagPage);	//改成子窗口类，让子窗口自己刷新	18-12-29;
 	UpdateSoftMenu();
+
 	return;
 }
 
@@ -393,6 +295,9 @@ void TDMenu::SoftMenu_Reset()
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
+	iLastMenuSer = iCurMenuSer;
+	iCurMenuSer = 0;
+	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
 	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
 
 	tdItem->TagPage_RefreshItems(&vcTagList.at(0));
@@ -410,7 +315,8 @@ void TDMenu::SoftMenu_Pop()
 
 	smCurMenu = &MenuStack[0];
 
-	if (CHK_FLAGS(lpCurMenu->dwFlags, SMF_FN_LEAVE) && (lpCurMenu->fnLeave))
+
+	if (lpCurMenu && (lpCurMenu->dwFlags, SMF_FN_LEAVE) && (lpCurMenu->fnLeave))
 		lpCurMenu->fnLeave(0, 0, 0, lpCurMenu);
 
 	smCurMenu->fnEnter(0, 0, 0, smCurMenu);
@@ -420,6 +326,9 @@ void TDMenu::SoftMenu_Pop()
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
+	iLastMenuSer = iCurMenuSer;
+	iCurMenuSer = 0;
+	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
 	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
 
 	stCurTagPage = &vcTagList.at(0);
@@ -430,7 +339,11 @@ void TDMenu::SoftMenu_Pop()
 
 int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
 {
+	iLastMenuSer = iCurMenuSer;
+	iCurMenuSer = dwNewIndex;
+	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
 	SET_FLAGS(vcTagList.at(dwNewIndex).dwFlags, SM_ISFOCUS);
+	stCurTagPage = &vcTagList.at(dwNewIndex);
 
 	tdItem->TagPage_RefreshItems(&vcTagList.at(dwNewIndex));
 	UpdateSoftMenu();
@@ -445,6 +358,16 @@ HWND TDMenu::GetItemHwnd()
 
 PSOFT_SUB_ITEM TDMenu::GetSoftSubItem(int index)
 {
+	if (!tdItem)
+	{
+		PSOFT_TAG_PAGE lpTagPage = stCurTagPage;
+
+		if (lpTagPage == NULL)
+			return NULL;
+		if (index >= lpTagPage->dwNumOfSubItems)
+			return NULL;
+		return &(lpTagPage->lpSubItem[index]);
+	}
 	return tdItem->GetItemByIndex(index);
 }
 
@@ -465,7 +388,7 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  在此添加您专用的创建代码	
-	memset(&MenuStack[1], 0, sizeof(PSOFT_MENU) * 255);
+	memset(&MenuStack[1], 0, sizeof(SOFT_MENU));
 	MenuStack[0] = menuRoot;
 	smCurMenu = &MenuStack[0];
 
@@ -480,6 +403,7 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 	stCurTagPage = &vcTagList.at(0);
 	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+	iCurMenuSer = 0;
 
 	//创建画笔
 	hPen_Gray = CreatePen(PS_SOLID, 1, RGB(1, 107, 161));
@@ -534,17 +458,8 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (hFont_cfg2 == NULL)
 		hFont_cfg2 = (HFONT)GetStockObject(SYSTEM_FIXED_FONT);
 
-	tdItem = new TDItem(MenuStack[0].lpTagPage, uiCurMenu);
-	tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
-		16, 40, wWidth_SoftMenu - (WIDTH_SUBMENU + 4), wHeight_SoftMenu - 58, this->GetSafeHwnd(), NULL, lpCreateStruct->hInstance);
-
-	if (tdItem)
-	{
-		btMenuIndex = 0;
-		tdItem->TagPage_RefreshItems(MenuStack[0].lpTagPage);
-		UpdateSoftMenu();
-	}
 	SetTimer(0x1, 100, NULL);
+
 	return 0;
 }
 
@@ -555,6 +470,10 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_TIMER:
 			{
+				tdItem = new TDItem(MenuStack[0].lpTagPage, uiCurMenu);
+				tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
+					16, 40, 210 - (WIDTH_SUBMENU + 4), 980 - 58, GetSafeHwnd(), NULL, hMod);
+
 				wndTDRCHK();
 				SizeMainWnd(TRUE);
 				PhysEventHook();
@@ -687,7 +606,10 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_SETFOCUS:
 			{
 				uiCurFocusMenu = uiCurMenu;
-				SetFocus();
+				if (tdItem)
+					tdItem->SetFocus();
+				else
+					SetFocus();
 				break;
 			}
 
@@ -703,9 +625,6 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				tdItem->TagPage_RefreshItems(0);
 				break;
 			}
-
-		default:
-			break;
 	}
 
 	return CWnd::WindowProc(message, wParam, lParam);

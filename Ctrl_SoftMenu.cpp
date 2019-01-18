@@ -1,22 +1,11 @@
 ﻿#include "stdafx.h"
 
-#define WIDTH_SOFTMENU_MIN          208				//这里取值必须满足(N-0.5)/1.25为整数...因为懒得在程序里做判断纠错...
-#define WIDTH_SOFTMENU_MAX          240
-#define WIDTH_SOFTMENU              WIDTH_SOFTMENU_MIN
-
-#define WIDTH_SUBMENU               90
-
-#define HEIGHT_DIFF_SOFTMENU        18
-
 //原区域静态值，为了双开切成全局试试
 short TagPageOrd = -1;
 BOOL blTME = TRUE;
 
 DWORD *lpdwMenuWidth = NULL;
 
-//SoftMenu Width
-WORD wWidth_SoftMenu = WIDTH_SOFTMENU;
-WORD wHeight_SoftMenu = 0;
 
 int px_begin = 0;
 
@@ -109,7 +98,7 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	blWidth = TRUE;
 
 	BOOL blRet = TRUE;
-	CRect crect = { 0,0,wWidth_SoftMenu,wHeight_SoftMenu };
+	CRect crect = { 0,0,210,980 };
 
 	ResetHookPointer(HookPtr[0]);
 
@@ -124,8 +113,6 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	
 	if (hhkcwrp_MainWnd == NULL)
 		hhkcwrp_MainWnd = SetWindowsHookEx(WH_CALLWNDPROCRET, &cwrphk_MainWnd, hMod, GetCurrentThreadId());
-
-	AFX_MODULE_STATE* AFXAPI AfxGetStaticModuleState();
 
 	cwMenuWnd = new TDMenu(1);
 	cwMenuWnd2 = new TDMenu(2);
@@ -256,14 +243,30 @@ void UpdateSize_UI()
 		UpdateToolbarHeight();
 		if (lpdwTopHeight)
 		{
-			lngToolHeight= (dwTopHeight - 0.5) / 1.25;
-			*lpdwTopHeight = lngToolHeight;
+			try
+			{
+				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
+				*lpdwTopHeight = lngToolHeight;
+			}
+			catch (CException* e)
+			{
+				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
+				*lpdwTopHeight = NULL;
+			}
 		}
 	}
 	else
 	{
-		lngToolHeight = (dwTopHeight - 0.5) / 1.25;
-		*lpdwTopHeight = lngToolHeight;
+			try
+			{
+				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
+				*lpdwTopHeight = lngToolHeight;
+			}
+			catch (CException* e)
+			{
+				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
+				*lpdwTopHeight = NULL;
+			}
 	}
 
 	if (IsWindowVisible(hwSoftMenu))

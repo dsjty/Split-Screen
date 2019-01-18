@@ -9,7 +9,6 @@ ATOM wcToolBar = 0;
 
 DWORD dwBaseAdd = 0;
 
-extern WORD wWidth_SoftMenu;
 void SetSoftMenuWidth(WORD wWidth);
 BOOL WndCHK_TDR();
 

@@ -15,8 +15,6 @@
 #define TF_EXITED                   0x80000000
 
 extern WORD wWidth_MainWnd, wHeight_MainWnd;
-extern WORD wWidth_SoftMenu;
-
 
 static HANDLE hThread = NULL;
 static DWORD dwThreadFlags = 0;

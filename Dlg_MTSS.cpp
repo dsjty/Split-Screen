@@ -4,6 +4,8 @@
 #define MULTIPORT_TEST_SET_1         0
 #define MULTIPORT_TEST_SET_2         1
 
+LRESULT CALLBACK wp_MT_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 int iPortMenuNum = 4;
 
 static void *lpThis_DC[4] =
@@ -431,10 +433,10 @@ INT_PTR CALLBACK fndpMTSS(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_INITDIALOG:
 	{
-		wpfn_InputEdit = (WNDPROC)SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlA_DC), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlB_DC), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlC_DC), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlD_DC), GWL_WNDPROC, (LONG)&wp_InputEdit);
+		wpfn_InputEdit = (WNDPROC)SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlA_DC), GWL_WNDPROC, (LONG)&wp_MT_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlB_DC), GWL_WNDPROC, (LONG)&wp_MT_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlC_DC), GWL_WNDPROC, (LONG)&wp_MT_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_EDIT_CtrlD_DC), GWL_WNDPROC, (LONG)&wp_MT_InputEdit);
 		return TRUE;
 	}
 
@@ -1502,7 +1504,7 @@ bool GetSubMenustatus(void *lpThis)
 }
 
 
-LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK wp_MT_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = 0;
 	void *lpThisTDc = nullptr;

@@ -37,7 +37,7 @@ void * TagPage_ShowHelp(PSOFT_SUB_ITEM lpSubPage)
 	//	HWND hWnd = FindWindow(NULL, "TD3619");
 	//	HtmlHelp(hWnd, "D:\\TianDa\\Help\\TD3619D_HELP.chm", HH_HELP_CONTEXT, lpSubPage->dwReserve[1]);
 	//}
-	//return NULL;
+	return NULL;
 }
 
 int SoftItem_Finetune(PSOFT_SUB_ITEM lpSubItem, int nDelta, int nCount)

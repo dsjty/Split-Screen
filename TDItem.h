@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "TD_Button.h"
 #include <vector>
 // TDItem
 
@@ -15,7 +16,6 @@ public:
 
 public:
 	int TagPage_UpdateItemsPos();
-	void OnDrawItem_Button(LPDRAWITEMSTRUCT lpDIS, PSOFT_SUB_ITEM lpSubItem);	//绘制项目的过程 (按钮背景,复选框样式,扩展标签等)
 	int TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage);
 	BOOL SoftItem_IsActive(PSOFT_SUB_ITEM lpSubItem);
 	LRESULT OnCommand_Button(PSOFT_SUB_ITEM lpSubItem, int nItemIndex, int nCode, HWND hWnd);
@@ -36,23 +36,33 @@ public:
 	
 	PSOFT_SUB_ITEM GetItemByIndex(int nIndex);
 	
+	int SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight);
+	int SubCtrl_RadioButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight); 
+	int SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight);
+	int SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight);
+	int SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight);
+
 
 private:
 	UINT const uiCurMenus;
 	SOFT_TAG_PAGE stCurTagPage;
 	std::vector<SOFT_SUB_ITEM> ssSumItem;
+	std::vector<TD_Button*>vcButton;
+
 
 	WORD wWidth_SoftItem = 0, wHeight_SoftItem = 0;
 	CRect rcItem, rcLastItem;
 	DWORD dwFocusItem = 0, dwLastFocus = 0;
 	DWORD dwFocusFlags = 0;
 
+private://radio button
+	int iValueforRadioID = 0;
+	int iRadioCurSel[5] = { 0 };
 
 protected:
 	DECLARE_MESSAGE_MAP()
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-public:
-	afx_msg void OnSetFocus(CWnd* pOldWnd);
+
 };
 
 

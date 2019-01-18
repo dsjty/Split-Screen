@@ -155,7 +155,7 @@ typedef struct _SOFT_SUB_ITEM
   {
     //当前项目组中激活的索引,或者项目组头部索引
     DWORD                 dwActiveOffset;
-    DWORD                 dwGroupIndex;     //if dwGroupIndex == INVALID_INDEX then 不在组中
+    DWORD				  dwGroupIndex;     //if dwGroupIndex == INVALID_INDEX then 不在组中
   };
 
   union

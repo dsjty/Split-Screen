@@ -82,6 +82,15 @@
     <ClInclude Include="SharedData.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TD_Button.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TD_ComBoBtn.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TD_Edit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -99,16 +108,10 @@
     <ClCompile Include="SubCtrl_Button.cpp">
       <Filter>源文件\SubCtrls</Filter>
     </ClCompile>
-    <ClCompile Include="SubCtrl_CheckButton.cpp">
-      <Filter>源文件\SubCtrls</Filter>
-    </ClCompile>
     <ClCompile Include="SubCtrl_ComboButton.cpp">
       <Filter>源文件\SubCtrls</Filter>
     </ClCompile>
     <ClCompile Include="SubCtrl_InputButton.cpp">
-      <Filter>源文件\SubCtrls</Filter>
-    </ClCompile>
-    <ClCompile Include="SubCtrl_RadioButton.cpp">
       <Filter>源文件\SubCtrls</Filter>
     </ClCompile>
     <ClCompile Include="Menu_TracesConfig.cpp">
@@ -248,6 +251,18 @@
     </ClCompile>
     <ClCompile Include="TDItem.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedData.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TD_ComBoBtn.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="TD_Button.cpp">
+      <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="TD_Edit.cpp">
+      <Filter>源文件\SubCtrls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

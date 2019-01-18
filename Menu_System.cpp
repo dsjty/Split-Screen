@@ -88,7 +88,11 @@ int WINAPI fnItemSelected_Lang(DWORD dwFlags, WPARAM wParam, LPARAM lParam, stru
 		nIndex = 0;
 
 	nLangId = nIndex;         //设置新语言Id
-	TagPage_RefreshItems(FALSE);   //刷新软菜单
+
+	TDMenu *temp = nullptr;
+	temp = (uiCurFocusMenu == 2) ? cwMenuWnd2 : cwMenuWnd;
+	SNDMSG(temp->m_hWnd, WM_REFRESH, 0, 0);
+
 	UpdateSoftMenu();
 	return 0;
 }

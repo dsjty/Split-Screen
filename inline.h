@@ -140,7 +140,7 @@ inline void UpdateCurrentItemsAndData()
 	if (2 == uiCurFocusMenu)
 		temp = cwMenuWnd2;
 	else
-		temp = cwMenuWnd2;
+		temp = cwMenuWnd;
 
 
 	for (dwIndex = 0; dwIndex < temp->GetCurTagPage()->dwNumOfSubItems; dwIndex++)

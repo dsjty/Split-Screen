@@ -3,7 +3,7 @@
 #define WM_REFRESHCTL               (WM_USER + 2)
 
 LRESULT CALLBACK wpfn_PopupWnd(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
+LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 extern HFONT hFont_cfg1;
 extern HBITMAP hBmp_Enter;

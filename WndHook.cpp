@@ -116,6 +116,8 @@ void wndhk_OnNotify(LPCWPRETSTRUCT lpCWPR)
 
 	PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
 	PSOFT_SUB_ITEM lpSubItem2 = NULL;
+	if (!lpSubItem)
+		return;
 
 	if (hParentWnd == cwMenuWnd->GetItemHwnd())
 		lpSubItem2 = cwMenuWnd->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
@@ -156,9 +158,9 @@ LRESULT CALLBACK cwrphk_MainWnd(int nCode, WPARAM wParam, LPARAM lParam)
 		wndhk_OnCommand(lpCWPR);
 		break;
 
-	case WM_NOTIFY:
-		wndhk_OnNotify(lpCWPR);
-		break;
+	//case WM_NOTIFY:
+		//wndhk_OnNotify(lpCWPR);
+	//	break;
 	}
 	return CallNextHookEx(hhkcwrp_MainWnd, nCode, wParam, lParam);
 }

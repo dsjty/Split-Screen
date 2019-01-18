@@ -15,7 +15,7 @@ TDItem::TDItem() :
 
 }
 
-TDItem::TDItem(PSOFT_TAG_PAGE CurTagPage,int iSer):
+TDItem::TDItem(PSOFT_TAG_PAGE CurTagPage, int iSer) :
 	uiCurMenus(iSer)
 {
 	stCurTagPage = *CurTagPage;
@@ -33,6 +33,7 @@ TDItem::~TDItem()
 
 BEGIN_MESSAGE_MAP(TDItem, CWnd)
 	ON_WM_SETFOCUS()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -92,12 +93,6 @@ int TDItem::TagPage_UpdateItemsPos()
 					SubCtrl_Button_UpdatePos(&Me);
 					break;
 				}
-			case SIS_RadioButtonEx:			//单选按钮
-				break;
-
-			case SIS_CheckButtonEx:			//复选框
-				break;
-
 			case SIS_InputButtonEx:			//输入框
 				{
 					SubCtrl_InputButton_UpdatePos(&Me);
@@ -132,243 +127,14 @@ int TDItem::TagPage_UpdateItemsPos()
 
 #undef Me 
 	}
-}
-
-//绘制项目的过程 (按钮背景,复选框样式,扩展标签等)
-void TDItem::OnDrawItem_Button(LPDRAWITEMSTRUCT lpDIS, PSOFT_SUB_ITEM lpSubItem)
-{
-	if (lpDIS == NULL || lpSubItem == NULL)
-		return;
-
-	HDC hDC = lpDIS->hDC, hCDC;
-	BOOL blCDC = TRUE;
-	HBITMAP hBM;
-	RECT rect, rect2;
-	int cx, cy;
-	LPCWSTR lpcSubText = NULL;
-	CWnd *hFocus;
-	WCHAR wStr[MAX_PATH] = { 0 };
-
-	GetClientRect(&rect);
-	cx = rect.right - rect.left;
-	cy = rect.bottom - rect.top;
-
-	rect2 = rect;
-
-	hCDC = CreateCompatibleDC(hDC);
-
-	//判断双缓冲
-	if (hCDC == NULL)
-	{
-		hCDC = hDC;
-		blCDC = FALSE;
-	}
-	else if (hBM = CreateCompatibleBitmap(hDC, cx, cy))
-	{
-		SelectObject(hCDC, hBM);
-		DeleteObject(hBM);
-	}
-	else
-	{
-		DeleteDC(hCDC);
-		hCDC = hDC;
-		blCDC = FALSE;
-	}
-
-	{
-		HFONT hFont = (HFONT)SNDMSG(lpDIS->hwndItem, WM_GETFONT, 0, 0);
-		if (hFont)
-			SelectObject(hCDC, hFont);
-	}
-
-	SetBkMode(hCDC, TRANSPARENT);
-
-	if (lpSubItem->dwStyle == SIS_CheckButtonEx)
-		UpdateCheckBoxState(lpSubItem);
-
-	if (IsWindowEnabled() == FALSE || CHK_FLAGS(lpSubItem->dwAttributes, SIA_UNREAD))
-		DrawStretchBitmap(hCDC, hBmp_ButtonU, &rect);
-	else if (CHK_FLAGS(lpDIS->itemState, ODS_SELECTED) || CHK_FLAGS(lpSubItem->dwAttributes, SIAE_CHECKED) || SoftItem_IsActive(lpSubItem))
-		DrawStretchBitmap(hCDC, hBmp_Button1s, &rect);
-	else
-		DrawStretchBitmap(hCDC, hBmp_Button1, &rect);
-
-	hFocus = GetFocus();
-
-	//绘制焦点矩形
-	if (((lpSubItem->_hWnd == ssSumItem.at(dwFocusItem)._hWnd) || (lpDIS->hwndItem == hFocus->m_hWnd)) && (!CHK_FLAGS(lpSubItem->dwAttributes, SIA_UNREAD)))
-		DrawStretchBitmap(hCDC, hBmp_Button1s, &rect);
-
-	GetWindowTextW(lpDIS->hwndItem, wStr, MAX_PATH);
-	SetTextColor(hCDC, RGB(240, 240, 240));	//修改菜单字体颜色
-
-	rect2 = rect;
-
-	if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_SHOWSUB))
-		lpcSubText = GetActiveItemTextBySoftMenu(lpSubItem->lpSoftMenu);
-
-	if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_SHOWSUB) && CHK_FLAGS(lpSubItem->dwFlags, SIF_ISMENU) && (cy > 40) && (lpcSubText))  //ShowSub
-	{
-		rect2.left += 2;
-		rect2.top += 2;
-		rect2.right -= 2;
-		rect2.bottom -= 32;
-		DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER);
-
-		rect2.left += 2;
-		rect2.top = rect2.bottom + 3;
-		rect2.right -= 2;
-		rect2.bottom = rect.bottom - 3;
-		FillRect(hCDC, &rect2, GetStockBrush(WHITE_BRUSH));
-		DrawEdge(hCDC, &rect2, EDGE_SUNKEN, BF_RECT);
-
-		rect2.left++;
-		rect2.top++;
-		rect2.right--;
-		rect2.bottom--;
-
-		DrawTextW(hCDC, lpcSubText, -1, &rect2, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-	}
-	else if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_BITMAP))  //位图
-	{
-		rect2.left += 2;
-		rect2.top += 2;
-		rect2.right -= 2;
-		rect2.bottom -= 2;
-
-		if (lpSubItem->lpOpt[4] == NULL)
-			lpSubItem->lpOpt[4] = LoadImage((CHK_FLAGS(lpSubItem->dwAttributes, SIA_MAINRES) ? hMainMod : hMod), MAKEINTRESOURCE(lpSubItem->nBitmapId), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-
-		if (lpSubItem->lpOpt[4])
-			DrawStretchBitmap(hCDC, (HBITMAP)lpSubItem->lpOpt[4], &rect2);
-	}
-	else  //default
-	{
-		switch (lpSubItem->dwStyle)
-		{
-			case SIS_CheckButtonEx:
-				{
-					RECT rect3;
-					rect3 = rect2;
-					if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_FULLLINE))
-					{
-						rect2.left += (rect3.right - rect3.left) / 5 / 2 - 5;
-						rect2.right = (rect3.right - rect3.left) / 5 / 2 + 9;
-					}
-					else
-					{
-						rect2.left += (rect3.right - rect3.left) / 5 - 5;
-						rect2.right = (rect3.right - rect3.left) / 5 + 9;
-					}
-					rect2.top = lpSubItem->wHeight / 2 - 7;
-					rect2.bottom = lpSubItem->wHeight / 2 + 7;
-
-					if (CHK_FLAGS(lpSubItem->dwAttributes, SIAE_CHECKED))
-						DrawStretchBitmap(hCDC, hBmp_Checked, &rect2);
-					else
-						DrawStretchBitmap(hCDC, hBmp_Unchecked, &rect2);
-					rect3.left = rect2.right + 2;
-					if (nLangId == 0)
-					{
-						if (wcslen(wStr) > 12)
-						{
-							rect3.top += 3;
-							rect3.left += 6;
-							rect3.right -= 7;
-							rect3.bottom += 8;
-							DrawTextW(hCDC, wStr, -1, &rect3, DT_CENTER | DT_EDITCONTROL | DT_WORDBREAK);
-						}
-						else
-							DrawTextW(hCDC, wStr, -1, &rect3, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-					}
-					else
-					{
-						if (wcslen(wStr) > 6)
-						{
-							rect3.top += 3;
-							rect3.left += 7;
-							rect3.right -= 8;
-							rect3.bottom += 8;
-							DrawTextW(hCDC, wStr, -1, &rect3, DT_CENTER | DT_EDITCONTROL | DT_WORDBREAK);
-						}
-						else
-						{
-							rect3.top -= 3;
-							DrawTextW(hCDC, wStr, -1, &rect3, DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-						}
-					}
-				}
-				break;
-
-			case SIS_InputButtonEx:
-			case SIS_ComboButtonEx:
-			case SIS_ComboRadioButtonEx:
-				rect2.left += 2;
-				rect2.right -= 2;
-
-				rect2.top += 4;
-				rect2.bottom = rect.bottom - 23;		  //调整其他框字符}
-				DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER);
-				break;
-
-			default: // SIS_ButtonEx:
-				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_EXLBL) && CHK_FLAGS(lpSubItem->dwAttributes, SIA_UPDATEITEM))
-				{
-					rect2.left += 2;
-					rect2.top += 3;
-					rect2.right -= 2;
-					rect2.bottom -= 2;
-					DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER | DT_VCENTER);
-				}
-				else
-				{
-					if (nLangId == 0)
-					{
-						if (wcslen(wStr) > 15)
-						{
-							rect2.top += 2;
-							rect2.left += 7;
-							rect2.right -= 7;
-							DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER | DT_EDITCONTROL | DT_WORDBREAK);
-						}
-						else
-							DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-					}
-					else
-					{
-						if (wcslen(wStr) > 9)
-						{
-							rect2.left += 7;
-							rect2.right -= 7;
-							DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER | DT_EDITCONTROL | DT_WORDBREAK);
-						}
-						else
-							DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-					}
-				}
-				break;
-		}
-	}
-
-	if (blCDC)
-	{
-		BitBlt(hDC, rect.left, rect.top, cx, cy, hCDC, rect.left, rect.top, SRCCOPY);
-		DeleteDC(hCDC);
-	}
-
-	if ((lpSubItem->dwStyle == SIS_InputButtonEx) && (lpSubItem->lpOpt[1]) && (lpSubItem->lpOpt[4]))
-	{
-		if (CHK_NOFLAGS(lpSubItem->dwFlags, SIF_POPINPUTWND))
-		{
-			::InvalidateRect((HWND)lpSubItem->lpOpt[4], NULL, TRUE);
-			::UpdateWindow((HWND)lpSubItem->lpOpt[4]);
-		}
-	}
+	return 0;
 }
 
 int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 {
 	PSOFT_TAG_PAGE TagPage = 0;
+	if (!this)
+		return 0;
 	HWND hwSoftItem = this->m_hWnd;
 
 	if (lpTagPage == NULL)
@@ -387,7 +153,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 	rcItem.left = 2;
 	rcItem.top = 2;
-	rcItem.right = wWidth_SoftItem - 2;
+	rcItem.right = WIDTH_SUBMENU - 2;
 	rcItem.bottom = rcItem.top;
 
 	rcLastItem.left = 0;
@@ -405,14 +171,13 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 #define Me   ssSumItem.at(i)
 
 		lngLeft = rcItem.left;
-		lngWidth = wWidth_SoftItem - 4;
+		lngWidth = WIDTH_SUBMENU - 4;
 
 		//一行2个
 		if (CHK_NOFLAGS(Me.dwAttributes, SIA_FULLLINE) && (Me.wMinWidth <= lngHalf))
 		{
 			if (blTail)
 			{
-
 				lngLeft = rcItem.left + lngHalf + 2;
 				lngWidth = lngHalf;
 				blTail = FALSE;
@@ -619,96 +384,10 @@ LRESULT TDItem::OnCommand_Button(PSOFT_SUB_ITEM lpSubItem, int nItemIndex, int n
 					}
 				}
 
-				switch (lpSubItem->dwStyle)
-				{
-					case SIS_ButtonEx:
-						break;
-
-					case SIS_CheckButtonEx:
-						lResult = SubCtrl_CheckButton_OnClicked(lpSubItem, hWnd);
-						break;
-
-					case SIS_InputButtonEx:
-						lResult = SubCtrl_InputButton_OnClicked(lpSubItem, hWnd);
-						break;
-
-					case SIS_RadioButtonEx:
-						lResult = SubCtrl_RadioButton_OnClicked(lpSubItem, hWnd);
-						break;
-
-					case SIS_ComboButtonEx:
-					case SIS_ComboRadioButtonEx:
-						lResult = SubCtrl_ComoboButton_OnClicked(lpSubItem, hWnd);
-						break;
-
-					default:
-						break;
-				}
-
 				SoftItem_ActivationItem(lpSubItem);
-
-				if (CHK_FLAGS(lpSubItem->dwFlags, SIF_FN_SWITCH))
-				{
-					if (lpSubItem->lpEvent[FNID_CLICKED])
-					{
-						func_ItemEvent_Clicked fnClicked = (func_ItemEvent_Clicked)lpSubItem->lpEvent[FNID_CLICKED];
-						fnClicked(0, IC_CLICKED_LAST, 0, lpSubItem);
-					}
-					else if (lpSubItem->lpEvent[FNID_SELECTED])
-					{
-						func_ItemEvent_Selected fnSelected = (func_ItemEvent_Selected)lpSubItem->lpEvent[FNID_SELECTED];
-
-						fnSelected(0, 0, 0, lpSubItem, ComboBox_GetCurSel((HWND)lpSubItem->lpOpt[4]));
-
-						UpdateCurrentItemsAndData();
-					}
-				}
-
-				if (CHK_FLAGS(lpSubItem->dwFlags, SIF_ORIGCLICK))
-				{
-					if (CHK_NOFLAGS(lpSubItem->dwFlags, SIF_NOREPLY) && (lpSubItem->dwStyle != SIS_CheckButtonEx))
-					{
-						if (lpSubItem->lpVTable && lpSubItem->lpThis)
-						{
-							if (CHK_NOFLAGS(lpSubItem->dwFlags, SIF_NOT_ENTER))
-								OrigSoftMenu_Enter(lpSubItem->lpThis);
-
-							OrigSoftMenu_ItemClicked2(lpSubItem->lpThis, lpSubItem->lpVTable, lpSubItem->dwFunctionId);
-						}
-					}
-				}
-				else if (CHK_FLAGS(lpSubItem->dwFlags, SIF_ISMENU) && (lpSubItem->lpSoftMenu))
-					::SendMessage(this->GetParent()->m_hWnd, WM_SWITCH_SUBMENU, 0, (LPARAM)(lpSubItem->lpSoftMenu));
-
-				else if (CHK_FLAGS(lpSubItem->dwFlags, SIF_SNDMSGCMD))
-					SNDMSG(cwMainWnd->m_hWnd, WM_COMMAND, lpSubItem->wParam, lpSubItem->lParam);
-
-				else if (CHK_FLAGS(lpSubItem->dwFlags, SIF_CALWND) && (lpSubItem->lpCalDlgCtxt))
-					CreateDialog_Cal(lpSubItem->lpCalDlgCtxt, 0);
-
-				else if (CHK_FLAGS(lpSubItem->dwFlags, SIF_DIALOG) && (lpSubItem->lpDlgCtxt))
-					CreateDialog_Def(lpSubItem->lpDlgCtxt, 0);
-
-				if (CHK_FLAGS(lpSubItem->dwFlags, SIF_FN_CLICKED) && (lpSubItem->lpEvent[FNID_CLICKED]) && CHK_NOFLAGS(lpSubItem->dwFlags, SIF_FN_SWITCH))
-				{
-					func_ItemEvent_Clicked fnClicked = (func_ItemEvent_Clicked)lpSubItem->lpEvent[FNID_CLICKED];
-					fnClicked(0, IC_CLICKED_LAST, 0, lpSubItem);
-				}
-
-				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_UPDATEITEM))
-					UpdateCurrentItems();
-
-				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_UPDATEDATA))
-					UpdateCurrentItemsAndData();
-
-				if (CHK_FLAGS(lpSubItem->dwFlags, SIF_FN_SETFOCUS))
-					::SetFocus(hWnd);
 			}
-			return lResult;
-
-		default:
-			return -1;
 	}
+	return 0;
 }
 
 int TDItem::TagPage_DestroyItems(BOOL blLeave)
@@ -721,12 +400,12 @@ int TDItem::TagPage_DestroyItems(BOOL blLeave)
 	if (CHK_FLAGS(lpTagPage->dwFlags, TPF_FN_LEAVE) && (lpTagPage->fnLeave))
 		return lpTagPage->fnLeave(0, 1, 0, lpTagPage);
 
-	for (DWORD i = 0; i < lpTagPage->dwNumOfSubItems; i++)
+	for (DWORD i = 0; i < ssSumItem.size(); i++)
 	{
-		if (lpTagPage->lpSubItem[i]._hWnd)
+		if (ssSumItem.at(i)._hWnd)
 		{
-			::DestroyWindow(lpTagPage->lpSubItem[i]._hWnd);
-			lpTagPage->lpSubItem[i]._hWnd = NULL;
+			::DestroyWindow(ssSumItem.at(i)._hWnd);
+			ssSumItem.at(i)._hWnd = NULL;
 		}
 	}
 
@@ -944,15 +623,7 @@ void TDItem::SoftItem_ActivationItemByOffsetIndex(PSOFT_SUB_ITEM lpSubItem, int 
 
 DWORD TDItem::GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem)
 {
-	for (size_t i = 0; i < ssSumItem.size(); i++)
-	{
-		if (ssSumItem.at(i)._hWnd)
-		{
-			if (lpSubItem->_hWnd == ssSumItem.at(i)._hWnd)
-				return i;
-		}
-	}
-	return INVALID_INDEX;
+	return lpSubItem->dwGroupIndex;
 }
 
 PSOFT_SUB_ITEM TDItem::GetGroupHeader(PSOFT_SUB_ITEM lpSubItem)
@@ -1052,88 +723,275 @@ PSOFT_SUB_ITEM TDItem::GetItemByIndex(int nIndex)
 	return &ssSumItem.at(nIndex);
 }
 
+int TDItem::SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	char *temp = new char[20];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
+		x, y, nWidth, nHeight, hWnd, nullptr, 0);
+
+	lpMe->_hWnd = tempBtn->m_hWnd;
+	
+	//带扩展标签的按钮
+	if (CHK_FLAGS(lpMe->dwAttributes, SIA_EXLBL) && (lpMe->_hWnd))
+	{
+		tempBtn->SetEXLBLToAttributes(lpMe);
+	}
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return 0;
+}
+
+int TDItem::SubCtrl_RadioButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	char *temp = new char[20];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+
+	if (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP))
+		iValueforRadioID++;
+
+	int radioID = 0;
+
+	if (lpMe->dwStyle == SIS_RadioButtonEx)
+	{
+		radioID = iValueforRadioID * 1000 + lpMe->dwGroupIndex;
+	}
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW | BS_AUTORADIOBUTTON | BS_PUSHLIKE,
+		x, y, nWidth, nHeight, hWnd, (HMENU)radioID, 0);
+
+	lpMe->_hWnd = tempBtn->m_hWnd;
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return 0;
+}
+
+int TDItem::SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	int nRet = 0;
+
+	char *temp = new char[20];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
+		x, y, nWidth, nHeight, hWnd, nullptr, 0);
+
+	lpMe->_hWnd = tempBtn->m_hWnd;
+
+	if (lpMe->_hWnd)
+	{
+		if (CHK_FLAGS(lpMe->dwAttributes, SIA_GETCHKSTATE) && (lpMe->lpOpt[2]))
+		{
+			if (lpMe->lpOpt[12])
+			{
+				lpMe->lpOpt[2] = (void*)((DWORD)lpMe->lpOpt[2] - BASE);
+				lpMe->lpOpt[12] = 0;
+			}
+			if (GetButtonCheckState(lpMe->lpOpt[2], (int)lpMe->lpOpt[3]))
+			{
+				SET_FLAGS(lpMe->dwAttributes, SIAE_CHECKED);
+				Button_SetCheck(lpMe->_hWnd, BST_CHECKED);
+			}
+			else
+			{
+				NOT_FLAGS(lpMe->dwAttributes, SIAE_CHECKED);
+				Button_SetCheck(lpMe->_hWnd, BST_UNCHECKED);
+			}
+		}
+		else if (CHK_FLAGS(lpMe->dwAttributes, SIA_GETBTNSTATE) && (lpMe->lpOpt[2]))
+		{
+			int nOnOff = 0;
+
+			if (lpMe->lpOpt[12])
+			{
+				lpMe->lpOpt[2] = (void*)((DWORD)lpMe->lpOpt[2] - BASE);
+				lpMe->lpOpt[12] = 0;
+			}
+			GetButtonStateIndex((char *)lpMe->lpOpt[2], lpMe->lpOpt[3], &nOnOff, (int)lpMe->lpOpt[0]);
+
+			if (GET_BYTE_0(nOnOff) != 0)
+			{
+				SET_FLAGS(lpMe->dwAttributes, SIAE_CHECKED);
+				Button_SetCheck(lpMe->_hWnd, BST_CHECKED);
+			}
+			else
+			{
+				NOT_FLAGS(lpMe->dwAttributes, SIAE_CHECKED);
+				Button_SetCheck(lpMe->_hWnd, BST_UNCHECKED);
+			}
+		}
+		else if (CHK_FLAGS(lpMe->dwAttributes, SIAE_CHECKED))
+			Button_SetCheck(lpMe->_hWnd, BST_CHECKED);
+
+	}
+	else
+		nRet = -1;
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return nRet;
+}
+
+int TDItem::SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	char *temp = new char[20];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
+		x, y, nWidth, nHeight, hWnd, nullptr, 0);
+
+	lpMe->_hWnd = tempBtn->GetSafeHwnd();
+
+	TD_ComBoBtn *Comtmp = new TD_ComBoBtn(lpMe);
+	if (lpMe->_hWnd)
+	{
+		RECT rect = { 0 };
+		Comtmp->CreateEx(0, WC_COMBOBOX, 0, WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | CBS_DROPDOWNLIST | CBS_AUTOHSCROLL, rect, tempBtn, 0);
+		lpMe->lpOpt[4] = Comtmp->GetSafeHwnd();
+
+		SubCtrl_ComboButton_UpdatePos(lpMe);
+	}
+
+	if ((Comtmp->GetSafeHwnd()) && (lpMe->dwNumberOfParams != 0) && (lpMe->lpParams != NULL))
+	{
+		if (!lpMe->dwReserve[3])	//wstring 和 原来的LPCWSTR切换语言方式不兼容诶!
+		{
+			for (DWORD dwIdx = 0; dwIdx < lpMe->dwNumberOfParams; dwIdx++)
+			{
+				LPCWSTR *lppWStr = (LPCWSTR *)lpMe->lpParams;
+				char *ctemp = new char[20];
+				WideCharToMultiByte(CP_ACP, 0, GetStringByIndex(lppWStr[dwIdx], nLangId), -1, ctemp, sizeof(char) * 20, nullptr, nullptr);
+				Comtmp->InsertString(dwIdx, ctemp);
+				delete ctemp;
+			}
+		}
+		if (1 == lpMe->dwReserve[3])
+		{
+			wstring* lppWStr = (wstring*)lpMe->lpParams;
+			CALKITOBJ stCalObj = { 0 };
+			WCHAR pBuffer[100] = { 0 };
+			for (DWORD dwIdx = 0; dwIdx < lpMe->dwNumberOfParams; dwIdx++)
+			{
+				stCalObj = cCalkit.GetCalKitName(dwIdx);
+				if (0 == stCalObj.dwObjNameAdd)
+				{
+					char *ctemp = new char[20];
+					WideCharToMultiByte(CP_ACP, 0, GetStringByIndex(lppWStr[dwIdx].c_str(), nLangId), -1, ctemp, sizeof(char) * 20, nullptr, nullptr);
+					Comtmp->InsertString(dwIdx, ctemp);
+					delete ctemp;
+				}
+				else
+				{
+					memset(pBuffer, 0, sizeof(WCHAR) * 100);
+					MultiByteToWideChar(CP_ACP, 0, (LPCSTR)stCalObj.dwObjNameAdd, -1, pBuffer, lppWStr[dwIdx].size());
+					lppWStr[dwIdx].assign(pBuffer);
+
+					char *ctemp = new char[20];
+					WideCharToMultiByte(CP_ACP, 0, GetStringByIndex(lppWStr[dwIdx].c_str(), nLangId), -1, ctemp, sizeof(char) * 20, nullptr, nullptr);
+					Comtmp->InsertString(dwIdx, ctemp);
+					delete ctemp;
+				}
+			}
+		}
+		Comtmp->SetCurSel(0);
+	}
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return 0;
+}
+
+int TDItem::SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	char *temp = new char[20];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
+		x, y, nWidth, nHeight, hWnd, nullptr, 0);
+
+	lpMe->_hWnd = tempBtn->m_hWnd;
+
+	if (lpMe->_hWnd)
+	{
+		if (CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE) || CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE2))
+		{
+			//存在微调按钮
+
+			if (CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE) && CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE2))
+			{
+				//同时存在2种微调按钮
+
+				lpMe->lpOpt[5] = CreateWindowExW(0, UPDOWN_CLASSW, NULL, WS_CHILD | WS_VISIBLE,
+					0, 0, 0, 0,
+					lpMe->_hWnd, NULL, hMod, NULL);
+
+				if (lpMe->lpOpt[5])
+					SetWindowLong((HWND)lpMe->lpOpt[5], GWL_USERDATA, SIA_FINETUNE);
+
+				lpMe->lpOpt[6] = CreateWindowExW(0, UPDOWN_CLASSW, NULL, WS_CHILD | WS_VISIBLE,
+					0, 0, 0, 0,
+					lpMe->_hWnd, NULL, hMod, NULL);
+
+				if (lpMe->lpOpt[6])
+					SetWindowLong((HWND)lpMe->lpOpt[6], GWL_USERDATA, SIA_FINETUNE2);
+			}
+			else
+			{
+				//存在单一一种微调按钮
+				LONG lngUserData = 0;
+
+				lpMe->lpOpt[5] = CreateWindowExW(0, UPDOWN_CLASSW, NULL, WS_CHILD | WS_VISIBLE, 0, 0, 0, 0, lpMe->_hWnd, NULL, hMod, NULL);
+
+				if (CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE))
+					lngUserData = SIA_FINETUNE;
+				else if (CHK_FLAGS(lpMe->dwAttributes, SIA_FINETUNE2))
+					lngUserData = SIA_FINETUNE2;
+
+				if (lpMe->lpOpt[5])
+					SetWindowLong((HWND)lpMe->lpOpt[5], GWL_USERDATA, lngUserData);
+			}
+		}
+
+		TD_Edit *EditTmp = new TD_Edit(lpMe);
+
+		EditTmp->CreateEx(WS_EX_CLIENTEDGE, WC_EDITA, 0, WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | (CHK_FLAGS(lpMe->dwAttributes, SIA_READONLY) ? ES_READONLY : 0), 0, 0, 0, 0, GetSafeHwnd(), 0, 0);
+
+		lpMe->lpOpt[4] = EditTmp->GetSafeHwnd();
+
+		SubCtrl_InputButton_UpdatePos(lpMe);
+	}
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return 0;
+}
+
 // TDItem 消息处理程序
 LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	switch (message)
 	{
-		case WM_NCPAINT:
-			break;
-
-		case WM_CREATE:
-			break;
-
-		case WM_DRAWITEM:
-			{
-				if (wParam)
-				{
-					LPDRAWITEMSTRUCT lpDIS = (LPDRAWITEMSTRUCT)lParam;
-					PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpDIS->hwndItem, GWL_USERDATA);
-
-					if (lpSubItem)
-					{
-						switch (lpSubItem->dwStyle)
-						{
-							case SIS_ButtonEx:
-							case SIS_RadioButtonEx:
-							case SIS_CheckButtonEx:
-							case SIS_InputButtonEx:
-							case SIS_ComboButtonEx:
-							case SIS_ComboRadioButtonEx:
-								OnDrawItem_Button(lpDIS, lpSubItem);
-								break;
-
-							default:
-								return DefWindowProc(message, wParam, lParam);
-						}
-						return TRUE;
-					}
-				}
-				break;
-			}
-
-		case WM_CTLCOLORSTATIC:
-			{
-				HDC hDC = (HDC)wParam;
-				HWND hCtlWnd = (HWND)lParam;
-
-				PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hCtlWnd, GWL_USERDATA);
-
-				if (lpSubItem)
-				{
-					SetBkMode(hDC, TRANSPARENT);
-					return (LRESULT)(HBRUSH)(COLOR_DESKTOP);
-				}
-				break;
-			}
-
-		case WM_COMMAND:
-			{
-				if (lParam)
-				{
-					WORD wId = LOWORD(wParam), wNc = HIWORD(wParam);
-					PSOFT_SUB_ITEM lpSubItem = &ssSumItem.at((int)wId - 1000);
-
-					if ((lpSubItem) && (lpSubItem == (PSOFT_SUB_ITEM)GetWindowLong((HWND)lParam, GWL_USERDATA)))
-					{
-						LRESULT nRet;
-
-						if (lpSubItem->dwStyle < SIS_Invalid)
-						{
-							nRet = OnCommand_Button(lpSubItem, wId - 1000, wNc, (HWND)lParam);
-
-							if (nRet == -1)
-								return DefWindowProc(message, wParam, lParam);
-							else
-								return nRet;
-						}
-					}
-				}
-				break;
-			}
-
-		case  WM_KEYDOWN:
+		case  WM_CREATE:
+			TagPage_RefreshItems(0);
 			break;
 
 		case WM_KEYUP:
@@ -1183,8 +1041,37 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 								}
 								break;
 							}
+
+						default:
+							DefWindowProc(message, wParam, lParam);
+							break;
 					}
 				}
+			}
+
+		case WM_COMMAND:
+			{
+				if (lParam)
+				{
+					WORD wId = LOWORD(wParam), wNc = HIWORD(wParam);
+					PSOFT_SUB_ITEM lpSubItem = GetItemByIndex((int)wId - 1000);
+
+					if ((lpSubItem) && (lpSubItem == (PSOFT_SUB_ITEM)GetWindowLong((HWND)lParam, GWL_USERDATA)))
+					{
+						LRESULT nRet;
+
+						if (lpSubItem->dwStyle < SIS_Invalid)
+						{
+							nRet = OnCommand_Button(lpSubItem, wId - 1000, wNc, (HWND)lParam);
+
+							if (nRet == -1)
+								return DefWindowProc(message, wParam, lParam);
+							else
+								return nRet;
+						}
+					}
+				}
+				break;
 			}
 
 		case WM_REFRESH:	//刷新右侧按钮菜单事件
@@ -1222,38 +1109,33 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case WM_SETFOCUS:
 			{
 				uiCurFocusMenu = uiCurMenus;
+
+				PSOFT_SUB_ITEM lpSubItem = NULL;
+
+				if (dwFocusItem >= ssSumItem.size())
+					dwFocusItem = 0;
+
+				while (dwFocusItem < ssSumItem.size())
+				{
+					lpSubItem = &ssSumItem.at(dwFocusItem);
+
+					if (lpSubItem == NULL)
+						break;
+					if (lpSubItem->dwStyle != SIS_Delimiter)
+						break;
+
+					lpSubItem = NULL;
+					dwFocusItem++;
+				}
+
+				if ((lpSubItem) && (lpSubItem->_hWnd))
+				{
+					::SetFocus(lpSubItem->_hWnd);
+					::InvalidateRect(lpSubItem->_hWnd, NULL, TRUE);
+					::UpdateWindow(lpSubItem->_hWnd);
+				}
 				break;
 			}
 	}
 	return CWnd::WindowProc(message, wParam, lParam);
-}
-
-void TDItem::OnSetFocus(CWnd* pOldWnd)
-{
-	CWnd::OnSetFocus(pOldWnd);
-
-	PSOFT_SUB_ITEM lpSubItem = NULL;
-
-	if (dwFocusItem >= ssSumItem.size())
-		dwFocusItem = 0;
-
-	while (dwFocusItem < ssSumItem.size())
-	{
-		lpSubItem = &ssSumItem.at(dwFocusItem);
-
-		if (lpSubItem == NULL)
-			break;
-		if (lpSubItem->dwStyle != SIS_Delimiter)
-			break;
-
-		lpSubItem = NULL;
-		dwFocusItem++;
-	}
-
-	if ((lpSubItem) && (lpSubItem->_hWnd))
-	{
-		::SetFocus(lpSubItem->_hWnd);
-		::InvalidateRect(lpSubItem->_hWnd, NULL, TRUE);
-		::UpdateWindow(lpSubItem->_hWnd);
-	}
 }

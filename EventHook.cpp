@@ -16,7 +16,6 @@ extern SOFT_MENU menuDisplay;
 extern SOFT_MENU menuMacroSetup;
 extern SOFT_MENU menuPreset;
 
-extern WORD wWidth_MainWnd, wHeight_MainWnd, wWidth_SoftMenu;
 extern WORD wBackupWidth;
 
 void *lpOrgJmpTabPtr_09 = NULL;

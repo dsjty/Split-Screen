@@ -248,6 +248,9 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TDMenu.h" />
     <ClInclude Include="TDItem.h" />
+    <ClInclude Include="TD_Button.h" />
+    <ClInclude Include="TD_ComBoBtn.h" />
+    <ClInclude Include="TD_Edit.h" />
     <ClInclude Include="toolbar.h" />
   </ItemGroup>
   <ItemGroup>
@@ -315,6 +318,7 @@
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="Network Analyzer Core.cpp" />
     <ClCompile Include="OrigFuncs.cpp" />
+    <ClCompile Include="SharedData.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -325,13 +329,14 @@
     </ClCompile>
     <ClCompile Include="TDMenu.cpp" />
     <ClCompile Include="TDItem.cpp" />
+    <ClCompile Include="TD_Button.cpp" />
+    <ClCompile Include="TD_ComBoBtn.cpp" />
+    <ClCompile Include="TD_Edit.cpp" />
     <ClCompile Include="ToolbarFunc.cpp" />
     <ClCompile Include="WndHook.cpp" />
     <ClCompile Include="SubCtrl_Button.cpp" />
-    <ClCompile Include="SubCtrl_CheckButton.cpp" />
     <ClCompile Include="SubCtrl_ComboButton.cpp" />
     <ClCompile Include="SubCtrl_InputButton.cpp" />
-    <ClCompile Include="SubCtrl_RadioButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Network Analyzer Core.rc" />

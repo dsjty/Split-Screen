@@ -5,7 +5,7 @@ extern CALDLG_CTXT dcCal_7_1;
 
 static int nLastIdx = -1;
 
-static LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK wp_DC7_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 static void *lpThis_STD[21] =
 {
@@ -382,17 +382,17 @@ INT_PTR CALLBACK fndpCal_7(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		wpfn_InputEdit = (WNDPROC)SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C0), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C1), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C2), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C3), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L0), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L1), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L2), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L3), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_OD), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_OZ), GWL_WNDPROC, (LONG)&wp_InputEdit);
-		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_AI), GWL_WNDPROC, (LONG)&wp_InputEdit);
+		wpfn_InputEdit = (WNDPROC)SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C0), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C1), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C2), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_C3), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L0), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L1), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L2), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_L3), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_OD), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_OZ), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
+		SetWindowLong(GetDlgItem(hDlg, IDC_CAL7_EDIT_AI), GWL_WNDPROC, (LONG)&wp_DC7_InputEdit);
 		return TRUE;
 	case WM_COMMAND:
 	{
@@ -480,17 +480,24 @@ INT_PTR CALLBACK fndpCal_7(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			}
 		}
-	}
+		}
 	break;
 	case WM_DESTROY:
-		TagPage_RefreshItems(TRUE);
-		break;
-	}
+		{
+			TDMenu *temp = nullptr;
+			if (2 == uiCurFocusMenu)
+				temp = cwMenuWnd2;
+			else
+				temp = cwMenuWnd;
 
+			SNDMSG(temp->GetSafeHwnd(), WM_REFRESH, 0, 0);
+			break;
+		}
+	}
 	return FALSE;
 }
 
-LRESULT CALLBACK wp_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK wp_DC7_InputEdit(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = 0;
 

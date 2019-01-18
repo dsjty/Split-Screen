@@ -39,7 +39,6 @@ extern HBITMAP hBmp_Checked, hBmp_Unchecked;
 
 //菜单栈
 extern SOFT_MENU menuRoot;
-extern BYTE btMenuIndex;
 extern DWORD dwTagPageIndex;
 
 void wndTDRCHK();
@@ -60,7 +59,6 @@ int WINAPI DirectCall_2(void *lpThis, void *lpFunction, int nIndex);
 
 LPCSTR GetStringByIndexA(LPCSTR lpStr, int nIndex);
 LPCWSTR GetStringByIndex(LPCWSTR lpWStr, int nIndex);
-LPCWSTR GetStringByIndex(LPCWSTR lpWStr, int nIndex, int lParam);
 
 int GetButtonStateIndex(const char *lpszCmd, void *lpUnk, int *lpIndex, int nVars);
 
@@ -133,10 +131,6 @@ void SizeMainWnd(BOOL blSync);
 
 //显示当前标签页的帮助
 void * TagPage_ShowHelp(PSOFT_SUB_ITEM lpSubPage);
-
-//刷新当前标签页的项目
-int TagPage_RefreshItems(BOOL blReload);
-
 
 //创建工具栏
 int Toolbar_Create(HWND hParent);

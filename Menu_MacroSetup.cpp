@@ -7,7 +7,9 @@ int WINAPI fnItemClicked_LoadProj(DWORD dwFlags, WPARAM wParam, LPARAM lParam, s
 	if (wParam == IC_CLICKED_LAST)
 	{
 		OrigSoftMenu_ItemClicked2(lpSubItem->lpThis, lpSubItem->lpVTable, lpSubItem->dwFunctionId);
-		TagPage_RefreshItems(TRUE);
+		TDMenu *temp = nullptr;
+		temp = (uiCurFocusMenu == 2) ? cwMenuWnd2 : cwMenuWnd;
+		SNDMSG(temp->m_hWnd, WM_REFRESH, 0, 0);
 	}
 
 	return 0;
