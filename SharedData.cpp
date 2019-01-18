@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+
 //当前活动的菜单窗口
 unsigned int uiCurFocusMenu = 1;
 

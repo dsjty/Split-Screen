@@ -9,10 +9,9 @@
 
 IMPLEMENT_DYNAMIC(TD_ComBoBtn, CComboBox)
 
-TD_ComBoBtn::TD_ComBoBtn(PSOFT_SUB_ITEM m):
-	m_sSubItem(m)
+TD_ComBoBtn::TD_ComBoBtn(PSOFT_SUB_ITEM m)
 {
-
+	m_sSubItem = *m;
 }
 
 TD_ComBoBtn::~TD_ComBoBtn()
@@ -52,14 +51,13 @@ void TD_ComBoBtn::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 void TD_ComBoBtn::OnCbnSelchange()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_sSubItem->dwStyle == SIS_ComboRadioButtonEx)
-		SET_FLAGS(m_sSubItem->dwAttributes, SIAE_CHECKED);
+	int iCurSel = GetCurSel();
 
-	if (CHK_FLAGS(m_sSubItem->dwFlags, SIF_FN_SELECTED) && (m_sSubItem->lpEvent[FNID_SELECTED]))
+	if (CHK_FLAGS(m_sSubItem.dwFlags, SIF_FN_SELECTED) && (m_sSubItem.lpEvent[FNID_SELECTED]))
 	{
-		func_ItemEvent_Selected fnSelected = (func_ItemEvent_Selected)m_sSubItem->lpEvent[FNID_SELECTED];
+		func_ItemEvent_Selected fnSelected = (func_ItemEvent_Selected)m_sSubItem.lpEvent[FNID_SELECTED];
 
-		fnSelected(0, 0, 0, m_sSubItem, GetCurSel());
+		fnSelected(0, 0, 0, &m_sSubItem, iCurSel);
 
 		UpdateCurrentItemsAndData();
 	}

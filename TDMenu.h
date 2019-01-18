@@ -5,13 +5,6 @@
 #include "externs.h"
 
 
-#define WIDTH_SOFTMENU_MIN          240
-#define WIDTH_SOFTMENU              WIDTH_SOFTMENU_MIN
-
-#define WIDTH_SUBMENU               90
-
-#define HEIGHT_DIFF_SOFTMENU        18
-
 // TDMenu
 
 class TDMenu : public CWnd

@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "SharedData.h"
 
 //原区域静态值，为了双开切成全局试试
 short TagPageOrd = -1;
@@ -98,7 +99,7 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	blWidth = TRUE;
 
 	BOOL blRet = TRUE;
-	CRect crect = { 0,0,210,980 };
+	CRect crect = { 0,0,WIDTH_SOFTMENU - WIDTH_SUBMENU,980 };
 
 	ResetHookPointer(HookPtr[0]);
 

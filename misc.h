@@ -8,6 +8,14 @@
 #include <Windowsx.h>
 #endif
 
+
+
+#define WIDTH_SOFTMENU              210
+
+#define WIDTH_SUBMENU               120
+
+#define HEIGHT_DIFF_SOFTMENU        18
+
 static WORD wBackupWidth;
 
 typedef struct _HOOK_POINTER

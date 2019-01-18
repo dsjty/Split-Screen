@@ -18,7 +18,7 @@ public:
 	afx_msg void OnCbnSelchange();
 
 private: 
-	PSOFT_SUB_ITEM m_sSubItem;
+	SOFT_SUB_ITEM m_sSubItem;
 };
 
 

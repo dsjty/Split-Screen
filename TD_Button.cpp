@@ -243,32 +243,9 @@ void TD_Button::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	rect2 = rect;
 
-	if (CHK_FLAGS(m_ssItem->dwAttributes, SIA_SHOWSUB))
-		lpcSubText = GetActiveItemTextBySoftMenu(m_ssItem->lpSoftMenu);
 
-	if (CHK_FLAGS(m_ssItem->dwAttributes, SIA_SHOWSUB) && CHK_FLAGS(m_ssItem->dwFlags, SIF_ISMENU) && (cy > 40) && (lpcSubText))  //ShowSub
-	{
-		rect2.left += 2;
-		rect2.top += 2;
-		rect2.right -= 2;
-		rect2.bottom -= 32;
-		DrawTextW(hCDC, wStr, -1, &rect2, DT_CENTER);
 
-		rect2.left += 2;
-		rect2.top = rect2.bottom + 3;
-		rect2.right -= 2;
-		rect2.bottom = rect.bottom - 3;
-		FillRect(hCDC, &rect2, GetStockBrush(WHITE_BRUSH));
-		DrawEdge(hCDC, &rect2, EDGE_SUNKEN, BF_RECT);
-
-		rect2.left++;
-		rect2.top++;
-		rect2.right--;
-		rect2.bottom--;
-
-		DrawTextW(hCDC, lpcSubText, -1, &rect2, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-	}
-	else if (CHK_FLAGS(m_ssItem->dwAttributes, SIA_BITMAP))  //λͼ
+	if (CHK_FLAGS(m_ssItem->dwAttributes, SIA_BITMAP))  //λͼ
 	{
 		rect2.left += 2;
 		rect2.top += 2;

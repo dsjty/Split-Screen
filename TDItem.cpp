@@ -153,7 +153,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 	rcItem.left = 2;
 	rcItem.top = 2;
-	rcItem.right = WIDTH_SUBMENU - 2;
+	rcItem.right = WIDTH_SUBMENU - 4;
 	rcItem.bottom = rcItem.top;
 
 	rcLastItem.left = 0;

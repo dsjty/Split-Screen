@@ -472,7 +472,7 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				tdItem = new TDItem(MenuStack[0].lpTagPage, uiCurMenu);
 				tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
-					16, 40, 210 - (WIDTH_SUBMENU + 4), 980 - 58, GetSafeHwnd(), NULL, hMod);
+					4, 40, (WIDTH_SUBMENU + 4), 980 - 58, GetSafeHwnd(), NULL, hMod);
 
 				wndTDRCHK();
 				SizeMainWnd(TRUE);
