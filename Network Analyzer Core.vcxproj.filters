@@ -246,12 +246,6 @@
     <ClCompile Include="Dlg_MTSS.cpp">
       <Filter>源文件\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="TDMenu.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TDItem.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="SharedData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -263,6 +257,12 @@
     </ClCompile>
     <ClCompile Include="TD_Edit.cpp">
       <Filter>源文件\SubCtrls</Filter>
+    </ClCompile>
+    <ClCompile Include="TDItem.cpp">
+      <Filter>源文件\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="TDMenu.cpp">
+      <Filter>源文件\Controls</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -169,6 +169,7 @@ void TD_Button::SetSoftSubItem(PSOFT_SUB_ITEM m_SSI)
 
 BEGIN_MESSAGE_MAP(TD_Button, CMFCButton)
 	ON_WM_LBUTTONDOWN()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -238,7 +239,7 @@ void TD_Button::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (CHK_FLAGS(lpDrawItemStruct->itemState, ODS_FOCUS) && (!CHK_FLAGS(m_ssItem->dwAttributes, SIA_UNREAD)))
 		DrawStretchBitmap(hCDC, hBmp_Button1s, &rect);
 
-	GetWindowTextW(GetSafeHwnd(), wStr, MAX_PATH);
+	GetWindowTextW(m_hWnd, wStr, MAX_PATH);
 	SetTextColor(RGB(240, 240, 240));	//修改菜单字体颜色
 
 	rect2 = rect;
@@ -376,8 +377,8 @@ void TD_Button::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
 		if (CHK_NOFLAGS(m_ssItem->dwFlags, SIF_POPINPUTWND))
 		{
-			InvalidateRect(NULL, TRUE);
-			UpdateWindow();
+			::InvalidateRect((HWND)m_ssItem->lpOpt[4], NULL, TRUE);
+			::UpdateWindow((HWND)m_ssItem->lpOpt[4]);
 		}
 	}
 }
@@ -424,6 +425,7 @@ void TD_Button::OnLButtonDown(UINT nFlags, CPoint point)
 				break;
 			}
 	}
+
 	PSOFT_SUB_ITEM lpSubItem = m_ssItem;
 
 	if (CHK_FLAGS(lpSubItem->dwFlags, SIF_FN_SWITCH))
@@ -483,5 +485,22 @@ void TD_Button::OnLButtonDown(UINT nFlags, CPoint point)
 	if (CHK_FLAGS(lpSubItem->dwFlags, SIF_FN_SETFOCUS))
 		SetFocus();
 
+
 	CMFCButton::OnLButtonDown(nFlags, point);
+}
+
+
+HBRUSH TD_Button::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CMFCButton::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+	if (m_ssItem->dwStyle == SIS_Delimiter)
+	{
+		pDC->SetBkMode(TRANSPARENT);
+		pDC->SetBkColor(RGB(88, 88, 88));
+		HBRUSH hbr = CreateSolidBrush(RGB(88, 88, 88));
+	}
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
 }

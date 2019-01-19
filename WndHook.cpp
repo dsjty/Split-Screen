@@ -84,27 +84,27 @@ void wndhk_SoftItem_OnNotify(LPCWPRETSTRUCT lpCWPR, PSOFT_SUB_ITEM lpSubItem)
 
 void wndhk_OnCommand(LPCWPRETSTRUCT lpCWPR)
 {
-	if (cwMenuWnd == 0 || cwMenuWnd2 == 0)
-		return;
-
-	HWND hParentWnd = GetParent(lpCWPR->hwnd);
-
-	PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
-	PSOFT_SUB_ITEM lpSubItem2 = NULL;
-
-	if (hParentWnd==cwMenuWnd->GetItemHwnd())
-		lpSubItem2 = cwMenuWnd->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
-	else if(hParentWnd==cwMenuWnd2->GetItemHwnd())
-		lpSubItem2 = cwMenuWnd2->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
-	
-	if (lpSubItem2)
-	{
-		if (lpSubItem != lpSubItem2)
-			lpSubItem = NULL;
-
-		if (lpSubItem) 
-			wndhk_SoftItem_OnCommand(lpCWPR, lpSubItem);
-	}
+	//if (cwMenuWnd == 0 || cwMenuWnd2 == 0)
+	//	return;
+	//
+	//HWND hParentWnd = GetParent(lpCWPR->hwnd);
+	//
+	//PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(lpCWPR->hwnd, GWL_USERDATA);
+	//PSOFT_SUB_ITEM lpSubItem2 = NULL;
+	//
+	//if (hParentWnd==cwMenuWnd->GetItemHwnd())
+	//	lpSubItem = cwMenuWnd->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	//else if(hParentWnd==cwMenuWnd2->GetItemHwnd())
+	//	lpSubItem2 = cwMenuWnd2->GetSoftSubItem(GetWindowLong(lpCWPR->hwnd, GWL_ID) - 1000);
+	//
+	//if (lpSubItem2)
+	//{
+	//	if (lpSubItem != lpSubItem2)
+	//		lpSubItem = NULL;
+	//
+	//	if (lpSubItem) 
+	//		wndhk_SoftItem_OnCommand(lpCWPR, lpSubItem);
+	//}
 }
 
 void wndhk_OnNotify(LPCWPRETSTRUCT lpCWPR)
@@ -154,13 +154,9 @@ LRESULT CALLBACK cwrphk_MainWnd(int nCode, WPARAM wParam, LPARAM lParam)
 
 	switch (lpCWPR->message)
 	{
-	case WM_COMMAND:
-		wndhk_OnCommand(lpCWPR);
+	case WM_NOTIFY:
+		wndhk_OnNotify(lpCWPR);
 		break;
-
-	//case WM_NOTIFY:
-		//wndhk_OnNotify(lpCWPR);
-	//	break;
 	}
 	return CallNextHookEx(hhkcwrp_MainWnd, nCode, wParam, lParam);
 }

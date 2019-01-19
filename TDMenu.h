@@ -44,7 +44,6 @@ private:
 	unsigned int const uiCurMenu;
 	PSOFT_MENU smCurMenu;
 	PSOFT_TAG_PAGE stCurTagPage;
-	PSOFT_SUB_ITEM ssCurItem;
 
 	HWND hwMenuWnd;
 	LOGFONT logFont = { 0 };
@@ -57,7 +56,6 @@ private:
 	CRect rcMenuButton, rcRetButton;
 	int nClickState = 0;	//×Ô»æ¿Ø¼þµÄ×´Ì¬ State
 	int iCurMenuSer = 0;
-	int iLastMenuSer = 0;
 
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

@@ -99,12 +99,12 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	blWidth = TRUE;
 
 	BOOL blRet = TRUE;
-	CRect crect = { 0,0,WIDTH_SOFTMENU - WIDTH_SUBMENU,980 };
+	CRect crect = { 0,0,wWidth_SoftMenu - WIDTH_SUBMENU,980 };
 
 	ResetHookPointer(HookPtr[0]);
 
 	cwMainWnd = pParentWnd;
-	hwMainWnd = pParentWnd->GetSafeHwnd();
+	hwMainWnd = pParentWnd->m_hWnd;
 
 
 	
@@ -119,10 +119,10 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	cwMenuWnd2 = new TDMenu(2);
 
 	cwMenuWnd->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW , (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
-	hwSoftMenu = cwMenuWnd->GetSafeHwnd();
+	hwSoftMenu = cwMenuWnd->m_hWnd;
 
 	cwMenuWnd2->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 2", WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
-	hwSoftMenu2 = cwMenuWnd2->GetSafeHwnd();
+	hwSoftMenu2 = cwMenuWnd2->m_hWnd;
 
 	if (hwSoftMenu)
 	{
@@ -219,7 +219,7 @@ void UpdateSize_UI()
 	wWidth_MainWnd = rect2.right - rect2.left;
 	lngHeight = rect2.bottom - rect2.top;
 
-	wHeight_SoftMenu = lngHeight - HEIGHT_DIFF_SOFTMENU;
+	wHeight_SoftMenu = lngHeight - HEIGHT_SOFTMENU;
 
 
 	if (!lpdwMenuWidth)
@@ -281,7 +281,7 @@ void UpdateSize_UI()
 	UpdateWindow(hwToolbar);
 	
 
-	wHeight_SoftMenu = wHeight_MainWnd - HEIGHT_DIFF_SOFTMENU;
+	wHeight_SoftMenu = wHeight_MainWnd - HEIGHT_SOFTMENU;
 
 	if (IsWindowVisible(hwSoftMenu))
 		SetWindowPos(hwSoftMenu, NULL, wWidth_MainWnd - wWidth_SoftMenu, 0, wWidth_SoftMenu, wHeight_SoftMenu, SWP_NOZORDER);

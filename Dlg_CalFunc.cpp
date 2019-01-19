@@ -336,7 +336,7 @@ BOOL CALLBACK EnumCalDlgProc(HWND hwnd, LPARAM lParam)
 	CRect rect;
 	cWnd->GetWindowRect(rect);
 	pWnd->ScreenToClient(rect);
-	if (GetDlgCtrlID(cWnd->GetSafeHwnd()) == IDC_GB)
+	if (GetDlgCtrlID(cWnd->m_hWnd) == IDC_GB)
 		cWnd->SetWindowPos(0, 0, 0, rect.Width() - stCalDlg->iDlgDeffeX, rect.Height() - stCalDlg->iDlgDeffeY, SWP_NOZORDER | SWP_NOMOVE);
 	else
 		cWnd->SetWindowPos(0, rect.left - stCalDlg->iDlgDeffeX, rect.top - stCalDlg->iDlgDeffeY, 0, 0, SWP_NOZORDER | SWP_NOSIZE);

@@ -11,9 +11,6 @@
 #ifndef _INC_COMMCTRL
 #include <commctrl.h>
 #endif
-//Soft_Menu Flags
-#define SM_ISFOCUS				0x00100000		//设置当前标签为活动页;
-
 
 //Sub Item Flags
 #define SIF_ISMENU                  0x00000001      //条目点击后是个SOFT_MENU,进入下一级菜单
@@ -200,6 +197,8 @@ typedef struct _SOFT_SUB_ITEM
 #define TPF_FN_ENTER                0x00000001
 #define TPF_FN_LEAVE                0x00000002
 #define TPF_DYNAMIC                 0x00000004
+#define TPF_ISFOCUS					0x00100000		//设置当前标签为活动页;
+
 
 //软菜单标签页结构体
 typedef struct _SOFT_TAG_PAGE

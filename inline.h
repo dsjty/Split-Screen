@@ -88,22 +88,22 @@ inline void UpdateCurrentItems()
 	SendMessage(cwMenuWnd2->GetItemHwnd(), WM_REFRESH, 0, 0);
 }
 
-inline void UpdateDataByTagPage(PSOFT_TAG_PAGE lpTagPage)
+inline void UpdateDataByTagPage(std::vector<SOFT_SUB_ITEM> *ssSumItem)
 {
-	if (lpTagPage)
+	if (ssSumItem)
 	{
 		DWORD dwIndex;
 
-		for (dwIndex = 0; dwIndex < lpTagPage->dwNumOfSubItems; dwIndex++)
+		for (dwIndex = 0; dwIndex < ssSumItem->size(); dwIndex++)
 		{
-			if (CHK_FLAGS(lpTagPage->lpSubItem[dwIndex].dwFlags, SIF_FN_UPDATEDATA) && (lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA]))
+			if (CHK_FLAGS(ssSumItem->at(dwIndex).dwFlags, SIF_FN_UPDATEDATA) && (ssSumItem->at(dwIndex).lpEvent[FNID_UPDATE_DATA]))
 			{
-				func_ItemEvent_UpdateData fnUpdateData = (func_ItemEvent_UpdateData)lpTagPage->lpSubItem[dwIndex].lpEvent[FNID_UPDATE_DATA];
-				fnUpdateData(0, 0, 0, &(lpTagPage->lpSubItem[dwIndex]));
+				func_ItemEvent_UpdateData fnUpdateData = (func_ItemEvent_UpdateData)ssSumItem->at(dwIndex).lpEvent[FNID_UPDATE_DATA];
+				fnUpdateData(0, 0, 0, &(ssSumItem->at(dwIndex)));
 			}
-			else if ((lpTagPage->lpSubItem[dwIndex].dwStyle == SIS_InputButtonEx) && (lpTagPage->lpSubItem[dwIndex].lpOpt[1]))
+			else if ((ssSumItem->at(dwIndex).dwStyle == SIS_InputButtonEx) && (ssSumItem->at(dwIndex).lpOpt[1]))
 			{
-				PSOFT_SUB_ITEM lpSubItem = &(lpTagPage->lpSubItem[dwIndex]);
+				PSOFT_SUB_ITEM lpSubItem = &(ssSumItem->at(dwIndex));
 				WCHAR wcsText[MAX_PATH] = { 0 };
 
 				wcsText[0] = 0;

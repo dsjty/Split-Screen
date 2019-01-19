@@ -12,9 +12,9 @@
 
 #define WIDTH_SOFTMENU              210
 
-#define WIDTH_SUBMENU               120
+#define WIDTH_SUBMENU               90
 
-#define HEIGHT_DIFF_SOFTMENU        18
+#define HEIGHT_SOFTMENU        980
 
 static WORD wBackupWidth;
 

@@ -58,7 +58,7 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 	rect.left = wWidth_SoftMenu - WIDTH_SUBMENU;
 	rect.top = 36;
 	rect.right = wWidth_SoftMenu - 4;
-	rect.bottom = wHeight_MainWnd - HEIGHT_DIFF_SOFTMENU - 6;
+	rect.bottom = HEIGHT_SOFTMENU - 6;
 
 	nHeight = rect.bottom - rect.top;
 
@@ -129,7 +129,7 @@ void TDMenu::DSM_TagPage(CDC *hDC, const LPPAINTSTRUCT lpps)
 
 		hBrush = hBmp_Button2;
 
-		if (CHK_FLAGS(vcTagList.at(dwTmp).dwFlags, SM_ISFOCUS))
+		if (CHK_FLAGS(vcTagList.at(dwTmp).dwFlags, TPF_ISFOCUS))
 			nPushed++;
 
 		if (nPushed)
@@ -261,16 +261,16 @@ void TDMenu::SoftMenu_Switch(PSOFT_MENU lpSoftMenu, DWORD dwNewIndex, DWORD dwFl
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
-	iLastMenuSer = iCurMenuSer;
-	iCurMenuSer = 0;
-	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
-	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+	for (int i = 0; i < vcTagList.size(); i++)
+		NOT_FLAGS(vcTagList.at(i).dwFlags, TPF_ISFOCUS);
+	SET_FLAGS(vcTagList.at(0).dwFlags, TPF_ISFOCUS);
 
 	stCurTagPage = &vcTagList.at(0);
 
 	if (IsWindowVisible() == FALSE)
 		SNDMSG(hwMainWnd, 0x0432, 9, MAKELPARAM(0x003B, 0x0001));
 
+	tdItem->TagPage_RefreshItems(stCurTagPage);
 	UpdateSoftMenu();
 
 	return;
@@ -295,10 +295,10 @@ void TDMenu::SoftMenu_Reset()
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
-	iLastMenuSer = iCurMenuSer;
 	iCurMenuSer = 0;
-	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
-	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+	for (int i = 0; i < vcTagList.size(); i++)
+		NOT_FLAGS(vcTagList.at(i).dwFlags, TPF_ISFOCUS);
+	SET_FLAGS(vcTagList.at(0).dwFlags, TPF_ISFOCUS);
 
 	tdItem->TagPage_RefreshItems(&vcTagList.at(0));
 	UpdateSoftMenu();
@@ -326,10 +326,10 @@ void TDMenu::SoftMenu_Pop()
 	for (size_t i = 0; i < smCurMenu->dwNumOfTagPages; i++)
 		vcTagList.push_back(smCurMenu->lpTagPage[i]);
 
-	iLastMenuSer = iCurMenuSer;
 	iCurMenuSer = 0;
-	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
-	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+	for (int i = 0; i < vcTagList.size(); i++)
+		NOT_FLAGS(vcTagList.at(i).dwFlags, TPF_ISFOCUS);
+	SET_FLAGS(vcTagList.at(0).dwFlags, TPF_ISFOCUS);
 
 	stCurTagPage = &vcTagList.at(0);
 
@@ -339,10 +339,12 @@ void TDMenu::SoftMenu_Pop()
 
 int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
 {
-	iLastMenuSer = iCurMenuSer;
 	iCurMenuSer = dwNewIndex;
-	NOT_FLAGS(vcTagList.at(iLastMenuSer).dwFlags, SM_ISFOCUS);
-	SET_FLAGS(vcTagList.at(dwNewIndex).dwFlags, SM_ISFOCUS);
+
+	for (int i = 0; i < vcTagList.size(); i++)
+		NOT_FLAGS(vcTagList.at(i).dwFlags, TPF_ISFOCUS);
+
+	SET_FLAGS(vcTagList.at(dwNewIndex).dwFlags, TPF_ISFOCUS);
 	stCurTagPage = &vcTagList.at(dwNewIndex);
 
 	tdItem->TagPage_RefreshItems(&vcTagList.at(dwNewIndex));
@@ -353,7 +355,10 @@ int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
 
 HWND TDMenu::GetItemHwnd()
 {
-	return tdItem->GetSafeHwnd();
+	if (tdItem)
+		return tdItem->m_hWnd;
+	else
+		return 0;
 }
 
 PSOFT_SUB_ITEM TDMenu::GetSoftSubItem(int index)
@@ -402,7 +407,7 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		vcTagList.push_back(stTagPage);
 	}
 	stCurTagPage = &vcTagList.at(0);
-	SET_FLAGS(vcTagList.at(0).dwFlags, SM_ISFOCUS);
+	SET_FLAGS(vcTagList.at(0).dwFlags, TPF_ISFOCUS);
 	iCurMenuSer = 0;
 
 	//´´½¨»­±Ê
@@ -472,7 +477,7 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				tdItem = new TDItem(MenuStack[0].lpTagPage, uiCurMenu);
 				tdItem->CreateEx(NULL, (LPCTSTR)wcSoftItem, NULL, WS_CHILDWINDOW | WS_VISIBLE | WS_CLIPCHILDREN,
-					4, 40, (WIDTH_SUBMENU + 4), 980 - 58, GetSafeHwnd(), NULL, hMod);
+					4, 40, (WIDTH_SOFTMENU - WIDTH_SUBMENU - 4), 980 - 58, GetSafeHwnd(), NULL, hMod);
 
 				wndTDRCHK();
 				SizeMainWnd(TRUE);
@@ -541,8 +546,6 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_LBUTTONUP:
 			{
-				uiCurFocusMenu = uiCurMenu;
-
 				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
 				nClickState = 0;
 				if (HitRect(rcMenuButton, px, py))
@@ -556,6 +559,7 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							TagPage_SetIndex(i);
 							blNone = FALSE;
 							SetFocus();
+							iCurMenuSer = i;
 							return 0;
 						}
 					}

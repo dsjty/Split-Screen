@@ -118,7 +118,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							TrimLeft(szText, MAX_PATH);
 							BreakString(szText, MAX_PATH);
 
-							SNDMSG(GetSafeHwnd(), EM_GETSEL, (WPARAM)&dwStart, (LPARAM)&dwEnd);
+							SNDMSG(m_hWnd, EM_GETSEL, (WPARAM)&dwStart, (LPARAM)&dwEnd);
 
 							if (dwStart == dwEnd)
 							{
@@ -139,7 +139,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 							if (*szText2 == '-')
 							{
-								Edit_SetSel(GetSafeHwnd(), 1, 1);
+								Edit_SetSel(m_hWnd, 1, 1);
 							}
 						}
 						break;
@@ -149,10 +149,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "G");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(),GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd,GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -161,10 +161,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "M");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -173,10 +173,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "k");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -185,10 +185,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "a");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -197,10 +197,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "f");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -209,10 +209,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "p");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -221,10 +221,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "n");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -233,10 +233,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "\xEC\0");   //¦Ì
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -245,10 +245,10 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							WCHAR wcsText[MAX_PATH] = { 0 };
 
-							GetWindowTextW(GetSafeHwnd(), wcsText, MAX_PATH);
+							GetWindowTextW(m_hWnd, wcsText, MAX_PATH);
 							MakeUnitStringW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, "m");
-							SetWindowTextW(GetSafeHwnd(), wcsText);
-							SNDMSG(GetParent()->GetSafeHwnd(), WM_COMMAND, MAKEWPARAM(GetWindowLong(GetSafeHwnd(), GWL_ID), BN_CLICKED), 0);
+							SetWindowTextW(m_hWnd, wcsText);
+							SNDMSG(GetParent()->m_hWnd, WM_COMMAND, MAKEWPARAM(GetWindowLong(m_hWnd, GWL_ID), BN_CLICKED), 0);
 						}
 						break;
 
@@ -270,7 +270,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				DefWindowProc(message, wParam, lParam);
 
-				SelectAllText(GetSafeHwnd());
+				SelectAllText(m_hWnd);
 			}
 			break;
 
@@ -283,7 +283,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT))
 					{
 						SetInputType(ITID_TEXT);
-						ShellExecuteA(GetParent()->GetParent()->GetSafeHwnd(), "open", "C:\\Windows\\system32\\osk.exe", NULL, NULL, SW_SHOW);
+						ShellExecuteA(GetParent()->GetParent()->m_hWnd, "open", "C:\\Windows\\system32\\osk.exe", NULL, NULL, SW_SHOW);
 					}
 					else if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TIME))
 						SetInputType(ITID_NUM);
@@ -298,7 +298,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				SetInputItem(NULL);
 				SetInputType(ITID_UNKNOWN);
 
-				HWND hItem = GetParent()->GetSafeHwnd();
+				HWND hItem = GetParent()->m_hWnd;
 
 				if (lpSubItem && lpSubItem->lpOpt[1])
 				{
@@ -317,7 +317,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					{
 						fn_GetDouble fnGetDbl = GetAddr_GetDbl((void*)(BASE + (DWORD)(lpSubItem->lpOpt[1])));
 						FmtValueToStringExW(lpSubItem->lpOpt[1], wcsText, MAX_PATH, fnGetDbl(lpSubItem->lpOpt[1]));
-						SetWindowTextW(GetSafeHwnd(), wcsText);
+						SetWindowTextW(m_hWnd, wcsText);
 					}
 				}
 

@@ -133,8 +133,10 @@ int TDItem::TagPage_UpdateItemsPos()
 int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 {
 	PSOFT_TAG_PAGE TagPage = 0;
+
 	if (!this)
 		return 0;
+
 	HWND hwSoftItem = this->m_hWnd;
 
 	if (lpTagPage == NULL)
@@ -153,7 +155,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 	rcItem.left = 2;
 	rcItem.top = 2;
-	rcItem.right = WIDTH_SUBMENU - 4;
+	rcItem.right = WIDTH_SOFTMENU - WIDTH_SUBMENU - 4;
 	rcItem.bottom = rcItem.top;
 
 	rcLastItem.left = 0;
@@ -171,7 +173,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 #define Me   ssSumItem.at(i)
 
 		lngLeft = rcItem.left;
-		lngWidth = WIDTH_SUBMENU - 4;
+		lngWidth = wWidth_SoftItem - 4;
 
 		//一行2个
 		if (CHK_NOFLAGS(Me.dwAttributes, SIA_FULLLINE) && (Me.wMinWidth <= lngHalf))
@@ -288,26 +290,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 			case SIS_Delimiter://分隔符			
 				{
-					if (Me.wHeight <= 20)
-					{
-						if (0 == Me.lpszItemText)
-							Me.wHeight = 5;
-						else
-							Me.wHeight = 12;
-					}
-
-					lngWidth -= 4;
-
-					LPCWSTR lpLblTitle = GetSoftItemTextByIndex(&Me, nLangId);
-					DWORD dwExStyle = 0;
-
-					if (lpLblTitle == NULL)
-					{
-						dwExStyle = WS_EX_STATICEDGE;
-					}
-
-					Me._hWnd = CreateWindowExW(dwExStyle, WC_STATICW, lpLblTitle,
-						WS_CHILD | WS_VISIBLE | SS_CENTER, lngLeft, rcItem.bottom, lngWidth, Me.wHeight, hwSoftItem, NULL, hMod, NULL);
+					SubCtrl_StaticButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
 
 					if (Me._hWnd)
 					{
@@ -344,8 +327,9 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 #undef Me 
 	}
 
-	UpdateDataByTagPage(TagPage);
-	::RedrawWindow(hwSoftItem, NULL, NULL, RDW_ERASE | RDW_ALLCHILDREN);
+	UpdateDataByTagPage(&ssSumItem);
+	RedrawWindow(NULL, NULL, RDW_ERASE | RDW_ALLCHILDREN);
+	UpdateSoftMenu();
 	SoftItem_SetFocus(dwFocusItem, 0);
 	return 0;
 }
@@ -404,11 +388,10 @@ int TDItem::TagPage_DestroyItems(BOOL blLeave)
 	{
 		if (ssSumItem.at(i)._hWnd)
 		{
-			::DestroyWindow(ssSumItem.at(i)._hWnd);
-			ssSumItem.at(i)._hWnd = NULL;
+			vcButton.at(i)->DestroyWindow();
 		}
 	}
-
+	UpdateWindow();
 	return 0;
 }
 
@@ -725,8 +708,8 @@ PSOFT_SUB_ITEM TDItem::GetItemByIndex(int nIndex)
 
 int TDItem::SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
-	char *temp = new char[20];
-	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+	char *temp = new char[30];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 30, nullptr, nullptr);
 
 	TD_Button *tempBtn = new TD_Button(lpMe);
 	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
@@ -749,8 +732,8 @@ int TDItem::SubCtrl_Button_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, 
 
 int TDItem::SubCtrl_RadioButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
-	char *temp = new char[20];
-	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+	char *temp = new char[30];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 30, nullptr, nullptr);
 
 	if (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP))
 		iValueforRadioID++;
@@ -779,8 +762,8 @@ int TDItem::SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 {
 	int nRet = 0;
 
-	char *temp = new char[20];
-	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+	char *temp = new char[30];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 30, nullptr, nullptr);
 
 	TD_Button *tempBtn = new TD_Button(lpMe);
 	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
@@ -846,26 +829,26 @@ int TDItem::SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 
 int TDItem::SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
 {
-	char *temp = new char[20];
-	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
+	char *temp = new char[30];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 30, nullptr, nullptr);
 
 	TD_Button *tempBtn = new TD_Button(lpMe);
 	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
 		x, y, nWidth, nHeight, hWnd, nullptr, 0);
 
-	lpMe->_hWnd = tempBtn->GetSafeHwnd();
+	lpMe->_hWnd = tempBtn->m_hWnd;
 
 	TD_ComBoBtn *Comtmp = new TD_ComBoBtn(lpMe);
 	if (lpMe->_hWnd)
 	{
 		RECT rect = { 0 };
 		Comtmp->CreateEx(0, WC_COMBOBOX, 0, WS_CHILD | WS_VISIBLE | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | CBS_DROPDOWNLIST | CBS_AUTOHSCROLL, rect, tempBtn, 0);
-		lpMe->lpOpt[4] = Comtmp->GetSafeHwnd();
+		lpMe->lpOpt[4] = Comtmp->m_hWnd;
 
 		SubCtrl_ComboButton_UpdatePos(lpMe);
 	}
 
-	if ((Comtmp->GetSafeHwnd()) && (lpMe->dwNumberOfParams != 0) && (lpMe->lpParams != NULL))
+	if ((Comtmp->m_hWnd) && (lpMe->dwNumberOfParams != 0) && (lpMe->lpParams != NULL))
 	{
 		if (!lpMe->dwReserve[3])	//wstring 和 原来的LPCWSTR切换语言方式不兼容诶!
 		{
@@ -922,7 +905,7 @@ int TDItem::SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 20, nullptr, nullptr);
 
 	TD_Button *tempBtn = new TD_Button(lpMe);
-	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN |  BS_OWNERDRAW,
 		x, y, nWidth, nHeight, hWnd, nullptr, 0);
 
 	lpMe->_hWnd = tempBtn->m_hWnd;
@@ -970,12 +953,47 @@ int TDItem::SubCtrl_InputButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 
 		TD_Edit *EditTmp = new TD_Edit(lpMe);
 
-		EditTmp->CreateEx(WS_EX_CLIENTEDGE, WC_EDITA, 0, WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | (CHK_FLAGS(lpMe->dwAttributes, SIA_READONLY) ? ES_READONLY : 0), 0, 0, 0, 0, GetSafeHwnd(), 0, 0);
+		EditTmp->CreateEx(WS_EX_CLIENTEDGE, WC_EDITA, 0, WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL | (CHK_FLAGS(lpMe->dwAttributes, SIA_READONLY) ? ES_READONLY : 0), 0, 0, 0, 0, lpMe->_hWnd, 0, 0);
 
-		lpMe->lpOpt[4] = EditTmp->GetSafeHwnd();
+		lpMe->lpOpt[4] = EditTmp->m_hWnd;
 
 		SubCtrl_InputButton_UpdatePos(lpMe);
 	}
+
+	tempBtn->SetSoftSubItem(lpMe);
+	vcButton.push_back(tempBtn);
+
+	delete temp;
+	return 0;
+}
+
+int TDItem::SubCtrl_StaticButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, int y, int nWidth, int nHeight)
+{
+	if (lpMe->wHeight <= 20)
+	{
+		if (0 == lpMe->lpszItemText)
+			lpMe->wHeight = 5;
+		else
+			lpMe->wHeight = 12;
+	}
+
+	nWidth -= 4;
+
+	DWORD dwExStyle = 0;
+
+	if (lpMe->lpszItemText == NULL)
+	{
+		dwExStyle = WS_EX_STATICEDGE;
+	}
+
+	char *temp = new char[30];
+	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, 30, nullptr, nullptr);
+
+	TD_Button *tempBtn = new TD_Button(lpMe);
+	tempBtn->CreateEx(dwExStyle, WC_STATIC, temp, WS_CHILD | WS_VISIBLE | SS_CENTER,
+		x, rcItem.bottom, nWidth, lpMe->wHeight, hWnd, nullptr, 0);
+
+	lpMe->_hWnd = tempBtn->m_hWnd;
 
 	tempBtn->SetSoftSubItem(lpMe);
 	vcButton.push_back(tempBtn);
@@ -992,6 +1010,16 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		case  WM_CREATE:
 			TagPage_RefreshItems(0);
+			break;
+
+		case WM_SIZE:
+			if (wParam != SIZE_MINIMIZED)
+			{
+				wWidth_SoftItem = LOWORD(lParam);
+				wHeight_SoftItem = HIWORD(lParam);
+
+				TagPage_UpdateItemsPos();
+			}
 			break;
 
 		case WM_KEYUP:

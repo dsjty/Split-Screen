@@ -29,6 +29,7 @@ private:
 public:
 	virtual void DrawItem(LPDRAWITEMSTRUCT /*lpDrawItemStruct*/);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 

@@ -490,7 +490,7 @@ INT_PTR CALLBACK fndpCal_7(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam)
 			else
 				temp = cwMenuWnd;
 
-			SNDMSG(temp->GetSafeHwnd(), WM_REFRESH, 0, 0);
+			SNDMSG(temp->m_hWnd, WM_REFRESH, 0, 0);
 			break;
 		}
 	}
