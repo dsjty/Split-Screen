@@ -186,7 +186,7 @@ void TD_Button::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	HBITMAP hBM;
 	RECT rect2, rect = lpDrawItemStruct->rcItem;
 	int cx, cy;
-	LPCWSTR lpcSubText = NULL;
+	LPCWSTR lpcSubText = NULL; 
 	CWnd *hFocus;
 	WCHAR wStr[MAX_PATH] = { 0 };
 
@@ -413,15 +413,6 @@ void TD_Button::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				if (m_ssItem->dwStyle == SIS_ComboRadioButtonEx)
 					SET_FLAGS(m_ssItem->dwAttributes, SIAE_CHECKED);
-
-				if (CHK_FLAGS(m_ssItem->dwFlags, SIF_FN_SELECTED) && (m_ssItem->lpEvent[FNID_SELECTED]))
-				{
-					func_ItemEvent_Selected fnSelected = (func_ItemEvent_Selected)m_ssItem->lpEvent[FNID_SELECTED];
-
-					fnSelected(0, 0, 0, m_ssItem, ComboBox_GetCurSel((HWND)m_ssItem->lpOpt[4]));
-
-					UpdateCurrentItemsAndData();
-				}
 				break;
 			}
 	}

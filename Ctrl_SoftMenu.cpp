@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "SharedData.h"
+#include <vector>
 
 //原区域静态值，为了双开切成全局试试
 short TagPageOrd = -1;
@@ -7,13 +7,14 @@ BOOL blTME = TRUE;
 
 DWORD *lpdwMenuWidth = NULL;
 
-
+CRect crWnd1Rect = { 0 }, crWnd2Rect = { 0 };
 int px_begin = 0;
 
 BOOL blCapture = FALSE;
 static BOOL blMove = FALSE;
 SOFT_MENU lpSoftMenu = { 0 };
 SOFT_TAG_PAGE lpTagPage = { 0 };
+std::vector<MONITORINFOEX> m_vec_Monitor;
 
 //菜单区域的上下箭头rect
 RECT rcItemUp, rcItemDown, rcMenuUp, rcMenuDown;
@@ -28,6 +29,65 @@ LRESULT CALLBACK cwrphk_MainWnd(int nCode, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK cwphk_MainWnd(int nCode, WPARAM wParam, LPARAM lParam);
 void SetSoftMenuWidth(WORD wWidth);
 void UpdateToolbarHeight();
+
+int SetWindowsPoint(HWND hWnd);
+
+BOOL CALLBACK AddMonitorsCallBack(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
+{
+
+	MONITORINFOEX mi;
+	{
+		mi.cbSize = sizeof(mi);
+		::GetMonitorInfo(hMonitor, &mi);
+	}
+
+	int nIndex = m_vec_Monitor.size();
+	m_vec_Monitor.push_back(mi);
+	return TRUE;
+}
+
+int SetWindowsPoint(HWND hWnd)
+{
+	UINT uiMainSceenWidth = 0, uiMainSceenHeight = 0, uiMajorSceenWidth = 0, uiMajorSceenHeight = 0;
+	UINT uiWidth = 0, uiHeight = 0;
+
+	ShowWindow(hWnd, SW_RESTORE);
+	//获取分屏数据
+	EnumDisplayMonitors(NULL, NULL, AddMonitorsCallBack, 0);
+	if (!m_vec_Monitor.size())
+		return 0;
+
+	if (m_vec_Monitor.at(0).rcMonitor.right)
+	{
+		crWnd1Rect = m_vec_Monitor.at(0).rcWork;
+		RECT rcMain = m_vec_Monitor.at(0).rcWork;
+		uiMainSceenWidth = rcMain.right - rcMain.left;
+		uiMainSceenHeight = rcMain.bottom - rcMain.top;
+
+		if (m_vec_Monitor.at(1).rcMonitor.right)
+		{
+			crWnd2Rect = m_vec_Monitor.at(1).rcWork;
+			RECT rcPrim = m_vec_Monitor.at(1).rcWork;
+			uiWidth = rcPrim.right - WIDTH_SOFTMENU * 2;
+			uiMajorSceenHeight = rcPrim.bottom - rcPrim.top;
+
+			if (m_vec_Monitor.at(1).dwFlags == MONITORINFOF_PRIMARY)
+				uiHeight = uiMajorSceenHeight;
+		}
+		else
+			uiWidth = uiMainSceenWidth + uiMajorSceenWidth - WIDTH_SOFTMENU * 2;
+
+		if (m_vec_Monitor.at(0).dwFlags == MONITORINFOF_PRIMARY)
+			uiHeight = uiMainSceenHeight;
+	}
+
+	SetWindowPos(hwMainWnd, 0, WIDTH_SOFTMENU, 0, uiWidth, uiHeight, SWP_SHOWWINDOW | SWP_NOZORDER);
+
+	crWnd1Rect.left += WIDTH_SOFTMENU + 10;
+	crWnd2Rect.right -= WIDTH_SOFTMENU + 10;
+
+	return uiWidth;
+}
 
 void UpdateWidthPointer()
 {
@@ -100,14 +160,45 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 
 	BOOL blRet = TRUE;
 	CRect crect = { 0,0,wWidth_SoftMenu - WIDTH_SUBMENU,980 };
+	CRect crect2 = crect;
+
+	EnumDisplayMonitors(NULL, NULL, AddMonitorsCallBack, 0);
+
+	{
+		UINT uiMainSceenWidth = 0, uiMainSceenHeight = 0, uiMajorSceenWidth = 0, uiMajorSceenHeight = 0;
+		UINT uiWidth = 0, uiHeight = 0;
+		if(m_vec_Monitor.size())
+		{
+			if (m_vec_Monitor.at(0).rcWork.right)
+			{
+				RECT rcMain = m_vec_Monitor.at(0).rcWork;
+				uiMainSceenWidth = rcMain.right - rcMain.left;
+				uiMainSceenHeight = rcMain.bottom - rcMain.top;
+
+				if (m_vec_Monitor.at(1).rcWork.right)
+				{
+					RECT rcPrim = m_vec_Monitor.at(1).rcWork;
+					uiMajorSceenWidth = rcPrim.right - rcPrim.left;
+					uiMajorSceenHeight = rcPrim.bottom - rcPrim.top;
+
+					if (m_vec_Monitor.at(1).dwFlags == MONITORINFOF_PRIMARY)
+						uiHeight = uiMajorSceenHeight;
+				}
+				if (m_vec_Monitor.at(0).dwFlags == MONITORINFOF_PRIMARY)
+					uiHeight = uiMainSceenHeight;
+			}
+			uiWidth = uiMainSceenWidth + uiMajorSceenWidth - WIDTH_SOFTMENU * 2;
+			crect.bottom = wHeight_MainWnd = uiHeight;
+			crect2.bottom = uiHeight;
+			crect2.left = uiWidth;
+		}
+	}
 
 	ResetHookPointer(HookPtr[0]);
 
 	cwMainWnd = pParentWnd;
 	hwMainWnd = pParentWnd->m_hWnd;
 
-
-	
 #if CF_NEWMENU
 	if (hhkcwp_MainWnd == NULL)
 		hhkcwp_MainWnd = SetWindowsHookEx(WH_CALLWNDPROC, &cwphk_MainWnd, hMod, GetCurrentThreadId());
@@ -118,16 +209,12 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	cwMenuWnd = new TDMenu(1);
 	cwMenuWnd2 = new TDMenu(2);
 
-	cwMenuWnd->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW , (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
+	cwMenuWnd->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
 	hwSoftMenu = cwMenuWnd->m_hWnd;
 
-	cwMenuWnd2->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 2", WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
+	cwMenuWnd2->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 2", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect2, pParentWnd, NULL, NULL);
 	hwSoftMenu2 = cwMenuWnd2->m_hWnd;
 
-	if (hwSoftMenu)
-	{
-		SizeMainWnd(FALSE);
-	}
 #endif
 
 #if CF_MYTOOLBAR
@@ -159,13 +246,7 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 
 void SizeMainWnd(BOOL blSync)
 {
-	if (hwMainWnd)
-	{
-		if (blSync)
-			SendMessageA(hwMainWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(wWidth_MainWnd, wHeight_MainWnd));
-		else
-			PostMessageA(hwMainWnd, WM_SIZE, SIZE_RESTORED, MAKELPARAM(wWidth_MainWnd, wHeight_MainWnd));
-	}
+	SetWindowsPoint(cwMainWnd->GetSafeHwnd());
 }
 
 
@@ -209,6 +290,8 @@ void SetToolbarHeight(WORD wHeight)
 
 void UpdateSize_UI()
 {
+	UINT uiWidth = 0, uiHeight = 0;
+
 	if (!blWidth)
 		return;
 
@@ -221,6 +304,31 @@ void UpdateSize_UI()
 
 	wHeight_SoftMenu = lngHeight - HEIGHT_SOFTMENU;
 
+	{
+		UINT uiMainSceenWidth = 0, uiMainSceenHeight = 0, uiMajorSceenWidth = 0, uiMajorSceenHeight = 0;
+
+		if (m_vec_Monitor.at(0).rcMonitor.right)
+		{
+			RECT rcMain = m_vec_Monitor.at(0).rcWork;
+			uiMainSceenWidth = rcMain.right - rcMain.left;
+			uiMainSceenHeight = rcMain.bottom - rcMain.top;
+
+			if (m_vec_Monitor.at(1).rcMonitor.right)
+			{
+				RECT rcPrim = m_vec_Monitor.at(1).rcWork;
+				uiWidth = rcPrim.right - WIDTH_SOFTMENU * 2;
+				uiMajorSceenHeight = rcPrim.bottom - rcPrim.top;
+
+				if (m_vec_Monitor.at(1).dwFlags == MONITORINFOF_PRIMARY)
+					uiHeight = uiMajorSceenHeight;
+			}
+			else
+				uiWidth = uiMainSceenWidth + uiMajorSceenWidth - WIDTH_SOFTMENU * 2;
+
+			if (m_vec_Monitor.at(0).dwFlags == MONITORINFOF_PRIMARY)
+				uiHeight = uiMainSceenHeight;
+		}
+	}
 
 	if (!lpdwMenuWidth)
 	{
@@ -233,60 +341,16 @@ void UpdateSize_UI()
 		}
 	}
 	else
-	{
-		lngWidth = (wWidth_SoftMenu - 0.5) / 1.25;
+	{		lngWidth = (wWidth_SoftMenu - 0.5) / 1.25;
+
 		*lpdwMenuWidth = 0; //lngWidth;
 	}
 
-	
-	if (!lpdwTopHeight)
-	{
-		UpdateToolbarHeight();
-		if (lpdwTopHeight)
-		{
-			try
-			{
-				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
-				*lpdwTopHeight = lngToolHeight;
-			}
-			catch (CException* e)
-			{
-				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
-				*lpdwTopHeight = NULL;
-			}
-		}
-	}
-	else
-	{
-			try
-			{
-				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
-				*lpdwTopHeight = lngToolHeight;
-			}
-			catch (CException* e)
-			{
-				lngToolHeight = (dwTopHeight - 0.5) / 1.25;
-				*lpdwTopHeight = NULL;
-			}
-	}
 
 	if (IsWindowVisible(hwSoftMenu))
-		wWidth_Toolbar = wWidth_MainWnd - wWidth_SoftMenu;
-	else
-		wWidth_Toolbar = wWidth_MainWnd;
-
-	SetWindowPos(hwToolbar, NULL, 0, 0, wWidth_MainWnd - wWidth_SoftMenu, dwTopHeight, SWP_NOZORDER);
-
-	InvalidateRect(hwToolbar, NULL, TRUE);
-	UpdateWindow(hwToolbar);
-	
-
-	wHeight_SoftMenu = wHeight_MainWnd - HEIGHT_SOFTMENU;
-
-	if (IsWindowVisible(hwSoftMenu))
-		SetWindowPos(hwSoftMenu, NULL, wWidth_MainWnd - wWidth_SoftMenu, 0, wWidth_SoftMenu, wHeight_SoftMenu, SWP_NOZORDER);
+		SetWindowPos(hwSoftMenu, NULL, 0, 0, WIDTH_SOFTMENU, uiHeight, SWP_NOZORDER);
 	if (IsWindowVisible(hwSoftMenu2))
-		SetWindowPos(hwSoftMenu2, NULL, 0, 0, wWidth_SoftMenu, wHeight_SoftMenu, SWP_NOZORDER);
+		SetWindowPos(hwSoftMenu2, NULL, uiWidth + WIDTH_SOFTMENU, 0, WIDTH_SOFTMENU, uiHeight, SWP_NOZORDER);
 
 	RedrawWindow(hwMainWnd, NULL, NULL, 0);
 

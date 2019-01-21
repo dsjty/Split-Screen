@@ -32,6 +32,9 @@ extern DWORD *lpdwTopHeight;
 extern WORD wWidth_SoftMenu;
 extern WORD wHeight_SoftMenu;
 
+//记录主窗口两边的坐标值;
+extern CRect crWnd1Rect, crWnd2Rect;
+
 static int nInputType = 0;
 static HWND hWnd_PopWnd = NULL, hInputEdit = NULL, hBtnEnter = NULL, hBtnClose = NULL, hUpDn1 = NULL, hUpDn2 = NULL;
 

@@ -6,7 +6,7 @@
 #define CF_NEWMENU                        1
 
 //创建工具条
-#define CF_MYTOOLBAR                      1
+#define CF_MYTOOLBAR                      0
 
 //隐藏主菜单
 #define CF_HIDEMENU                       1
@@ -36,7 +36,7 @@
 #define CF_EVENTHANDLE                    1
 
 //挂钩焦点 (保持E5070程序在激活窗口时,焦点始终在软菜单上)
-#define CF_HOOKFOCUS                      1
+#define CF_HOOKFOCUS                      0
 
 //禁用编译时的警告
 #define CF_DISABLE_WARN                   1

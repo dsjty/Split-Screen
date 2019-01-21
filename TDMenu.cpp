@@ -347,8 +347,9 @@ int TDMenu::TagPage_SetIndex(DWORD dwNewIndex)
 	SET_FLAGS(vcTagList.at(dwNewIndex).dwFlags, TPF_ISFOCUS);
 	stCurTagPage = &vcTagList.at(dwNewIndex);
 
-	tdItem->TagPage_RefreshItems(&vcTagList.at(dwNewIndex));
 	UpdateSoftMenu();
+
+	tdItem->TagPage_RefreshItems(&vcTagList.at(dwNewIndex));
 
 	return 0;
 }
@@ -468,6 +469,33 @@ int TDMenu::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+//初始化界面设置
+void fnUIinitialize()
+{
+	OrigSoftMenu_Enter(CA_DISPLAY);
+	OrigSoftMenu_UpdateItems(CA_DISPLAY);
+	OrigSoftMenu_Enter(CA_ALLOCCHAN);
+	OrigSoftMenu_UpdateItems(CA_ALLOCCHAN);
+	OrigSoftMenu_ItemClicked2(CA_ALLOCCHAN, TA_ALLOCCHAN, 1);
+}
+
+void fnMouseClick()
+{
+	CRect crect = { 0 };
+	if (uiCurFocusMenu == 1)
+		crect = crWnd1Rect;
+	else
+		crect = crWnd2Rect;
+	
+	DWORD cx = crect.Width() / 2;
+	DWORD cy = crect.Height() / 2;
+
+	//mouse_event(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, cx, cy, NULL, NULL);
+	PSTMSG(hwMainWnd, 0x432, 0x4, 0);
+	PSTMSG(hwMainWnd, WM_LBUTTONDOWN, 1, MAKELPARAM(cx, cy));
+	PSTMSG(hwMainWnd, WM_LBUTTONUP, 1, MAKELPARAM(cx, cy));
+}
+
 LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// TODO: 在此添加专用代码和/或调用基类
@@ -482,6 +510,8 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				wndTDRCHK();
 				SizeMainWnd(TRUE);
 				PhysEventHook();
+
+				fnUIinitialize();
 
 				KillTimer(0x1);
 				break;
@@ -501,7 +531,7 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 				GetClientRect(&rect);
 				cx = rect.right - rect.left;
-				cy = rect.bottom - rect.top;
+				cy = rect.bottom = wHeight_MainWnd;
 
 				//尝试使用双缓冲
 				hCDC->CreateCompatibleDC(hDC);
@@ -543,11 +573,19 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_ERASEBKGND:
 			return TRUE;
+		case WM_LBUTTONDOWN:
+			{
+				uiCurFocusMenu = uiCurMenu;
+				fnMouseClick();
+				break;
+			}
 
 		case WM_LBUTTONUP:
 			{
 				int px = GET_X_LPARAM(lParam), py = GET_Y_LPARAM(lParam);
 				nClickState = 0;
+				uiCurFocusMenu = uiCurMenu;
+
 				if (HitRect(rcMenuButton, px, py))
 				{
 					BOOL blNone = TRUE;

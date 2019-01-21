@@ -61,7 +61,6 @@
 #define WM_TEST_FP                          WM_USER + 21
 #define WM_FINETUNE                         WM_USER + 22
 #define WM_REFRESH							WM_USER	+ 23
-#define WM_UPDATEMENU							WM_USER	+ 24
 #define NAKED                               __declspec(naked)
 #define RESERVE_DWORD4                      { 0, 0, 0, 0} 
 #define RESERVE_DWORD8                      { 0, 0, 0, 0, 0, 0, 0, 0} 

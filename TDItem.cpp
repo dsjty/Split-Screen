@@ -166,6 +166,7 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 	lngHalf = (rcItem.right - rcItem.left - 2) / 2;
 
 	ssSumItem.clear();//清空按钮hwnd栈;
+	vcButton.clear();
 
 	for (DWORD i = 0; i < TagPage->dwNumOfSubItems; i++)
 	{
@@ -329,7 +330,8 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 	UpdateDataByTagPage(&ssSumItem);
 	RedrawWindow(NULL, NULL, RDW_ERASE | RDW_ALLCHILDREN);
-	UpdateSoftMenu();
+	InvalidateRect(NULL, TRUE);
+	UpdateWindow();
 	SoftItem_SetFocus(dwFocusItem, 0);
 	return 0;
 }
@@ -350,10 +352,6 @@ LRESULT TDItem::OnCommand_Button(PSOFT_SUB_ITEM lpSubItem, int nItemIndex, int n
 		case BN_CLICKED:
 			{
 				uiCurFocusMenu = uiCurMenus;
-
-				PopWnd_Destroy(0, TRUE);
-
-				PSTMSG_432_2();
 
 				//更新焦点值
 				for (size_t i = 0; i < ssSumItem.size(); i++)
@@ -1002,12 +1000,19 @@ int TDItem::SubCtrl_StaticButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, i
 	return 0;
 }
 
+LRESULT OnCtlColorStatic(PSOFT_SUB_ITEM lpSubItem, HDC hCtlDC, HWND hCtlWnd)
+{
+	SetBkMode(hCtlDC, TRANSPARENT);
+	return (LRESULT)(HBRUSH)(COLOR_DESKTOP);
+}
 // TDItem 消息处理程序
 LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// TODO: 在此添加专用代码和/或调用基类
 	switch (message)
 	{
+		case WM_NCPAINT:
+			break;
 		case  WM_CREATE:
 			TagPage_RefreshItems(0);
 			break;
@@ -1108,19 +1113,17 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			}
 
-		case  WM_UPDATEMENU:
+		case WM_CTLCOLORSTATIC:
 			{
-				for (int i = 0; i < ssSumItem.size(); i++)
-				{
-					if (ssSumItem.at(i)._hWnd)
-					{
-						::InvalidateRect(ssSumItem.at(i)._hWnd, NULL, TRUE);
-						::UpdateWindow(ssSumItem.at(i)._hWnd);
-					}
-				}
-				InvalidateRect(NULL, TRUE);
-				UpdateWindow();
+				HDC hDC = (HDC)wParam;
+				HWND hCtlWnd = (HWND)lParam;
+
+				PSOFT_SUB_ITEM lpSubItem = (PSOFT_SUB_ITEM)GetWindowLong(hCtlWnd, GWL_USERDATA);
+
+				if (lpSubItem)
+					return OnCtlColorStatic(lpSubItem, hDC, hCtlWnd);
 			}
+			break;
 
 		case WM_FINETUNE:
 			{
