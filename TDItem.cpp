@@ -165,169 +165,333 @@ int TDItem::TagPage_RefreshItems(PSOFT_TAG_PAGE lpTagPage)
 
 	lngHalf = (rcItem.right - rcItem.left - 2) / 2;
 
-	ssSumItem.clear();//清空按钮hwnd栈;
 	vcButton.clear();
-
-	for (DWORD i = 0; i < TagPage->dwNumOfSubItems; i++)
+	//以下为替换元素方案，避免同一目录刷新出现指针传递错误。原因未知(赶进度，没空找)
+	if (ssSumItem.at(0).dwFlags && wcscmp(ssSumItem.at(0).lpszItemText, TagPage->lpSubItem[0].lpszItemText))
 	{
-		ssSumItem.push_back(TagPage->lpSubItem[i]);
+		for (DWORD i = 0; i < TagPage->dwNumOfSubItems; i++)
+		{
+			ssSumItem[i] = (TagPage->lpSubItem[i]);
+
 #define Me   ssSumItem.at(i)
 
-		lngLeft = rcItem.left;
-		lngWidth = wWidth_SoftItem - 4;
+			lngLeft = rcItem.left;
+			lngWidth = wWidth_SoftItem - 4;
 
-		//一行2个
-		if (CHK_NOFLAGS(Me.dwAttributes, SIA_FULLLINE) && (Me.wMinWidth <= lngHalf))
-		{
-			if (blTail)
+			//一行2个
+			if (CHK_NOFLAGS(Me.dwAttributes, SIA_FULLLINE) && (Me.wMinWidth <= lngHalf))
 			{
-				lngLeft = rcItem.left + lngHalf + 2;
-				lngWidth = lngHalf;
-				blTail = FALSE;
+				if (blTail)
+				{
+					lngLeft = rcItem.left + lngHalf + 2;
+					lngWidth = lngHalf;
+					blTail = FALSE;
+				}
+				else
+				{
+					lngWidth = lngHalf;
+					blTail = TRUE;
+				}
 			}
 			else
 			{
-				lngWidth = lngHalf;
-				blTail = TRUE;
-			}
-		}
-		else
-		{
-			blTail = FALSE;
-		}
-
-		switch (Me.dwStyle)
-		{
-			case SIS_ButtonEx:
-				//普通按钮
-				{
-					SubCtrl_Button_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-
-						if (CHK_FLAGS(Me.dwAttributes, SIA_EXLBL) && (Me.lpOpt[4]))
-						{
-							SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-						}
-					}
-				}
-				break;
-
-			case SIS_RadioButtonEx:
-				//单选按钮
-				{
-					SubCtrl_RadioButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-					}
-				}
-				break;
-
-			case SIS_CheckButtonEx:
-				//复选框
-				{
-					SubCtrl_CheckButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-					}
-				}
-				break;
-
-			case SIS_InputButtonEx:
-				//输入框
-				{
-					SubCtrl_InputButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-
-						if (Me.lpOpt[4])
-						{
-							SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FIXED_FONT), TRUE);
-						}
-					}
-				}
-				break;
-
-			case SIS_ComboButtonEx:
-			case SIS_ComboRadioButtonEx:
-				//下拉列表
-				{
-					SubCtrl_ComboButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-
-						if ((Me.dwStyle == SIS_ComboButtonEx || Me.dwStyle == SIS_ComboRadioButtonEx) && (Me.lpOpt[4]))
-						{
-							SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-						}
-					}
-				}
-				break;
-
-			case SIS_Delimiter://分隔符			
-				{
-					SubCtrl_StaticButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
-
-					if (Me._hWnd)
-					{
-						SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
-
-						SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
-						SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
-						::InvalidateRect(Me._hWnd, NULL, TRUE);
-					}
-				}
-				break;
-		}
-
-		if (Me._hWnd)
-		{
-			if (Me.dwStyle != SIS_Delimiter)
-				::GetWindowRect(Me._hWnd, &(Me.rect));
-
-			if (CHK_FLAGS(Me.dwAttributes, SIAE_DISABLED))
-				::EnableWindow(Me._hWnd, FALSE);
-		}
-
-		if (blTail == FALSE)
-			rcItem.bottom += Me.wHeight + 2;
-		else if (i < TagPage->dwNumOfSubItems)
-		{
-			if ((TagPage->lpSubItem[i + 1].wMinWidth > lngHalf) || CHK_FLAGS(TagPage->lpSubItem[i + 1].dwAttributes, SIA_FULLLINE))
-			{
-				rcItem.bottom += Me.wHeight + 2;
 				blTail = FALSE;
 			}
+
+			switch (Me.dwStyle)
+			{
+				case SIS_ButtonEx:
+					//普通按钮
+					{
+						SubCtrl_Button_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if (CHK_FLAGS(Me.dwAttributes, SIA_EXLBL) && (Me.lpOpt[4]))
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_RadioButtonEx:
+					//单选按钮
+					{
+						SubCtrl_RadioButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+						}
+					}
+					break;
+
+				case SIS_CheckButtonEx:
+					//复选框
+					{
+						SubCtrl_CheckButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+						}
+					}
+					break;
+
+				case SIS_InputButtonEx:
+					//输入框
+					{
+						SubCtrl_InputButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if (Me.lpOpt[4])
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FIXED_FONT), TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_ComboButtonEx:
+				case SIS_ComboRadioButtonEx:
+					//下拉列表
+					{
+						SubCtrl_ComboButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if ((Me.dwStyle == SIS_ComboButtonEx || Me.dwStyle == SIS_ComboRadioButtonEx) && (Me.lpOpt[4]))
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_Delimiter://分隔符			
+					{
+						SubCtrl_StaticButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+							::InvalidateRect(Me._hWnd, NULL, TRUE);
+						}
+					}
+					break;
+			}
+
+			if (Me._hWnd)
+			{
+				if (Me.dwStyle != SIS_Delimiter)
+					::GetWindowRect(Me._hWnd, &(Me.rect));
+
+				if (CHK_FLAGS(Me.dwAttributes, SIAE_DISABLED))
+					::EnableWindow(Me._hWnd, FALSE);
+			}
+
+			if (blTail == FALSE)
+				rcItem.bottom += Me.wHeight + 2;
+			else if (i < TagPage->dwNumOfSubItems)
+			{
+				if ((TagPage->lpSubItem[i + 1].wMinWidth > lngHalf) || CHK_FLAGS(TagPage->lpSubItem[i + 1].dwAttributes, SIA_FULLLINE))
+				{
+					rcItem.bottom += Me.wHeight + 2;
+					blTail = FALSE;
+				}
+			}
+#undef Me 
 		}
+	}
+	else	//以下为全清空新建按钮方案，目前会出现指针错误，原因未知(赶进度，没空找)
+	{
+		ssSumItem.clear();//清空按钮hwnd栈;
+		for (DWORD i = 0; i < TagPage->dwNumOfSubItems; i++)
+		{
+			ssSumItem.push_back(TagPage->lpSubItem[i]);
+#define Me   ssSumItem.at(i)
+
+			lngLeft = rcItem.left;
+			lngWidth = wWidth_SoftItem - 4;
+
+			//一行2个
+			if (CHK_NOFLAGS(Me.dwAttributes, SIA_FULLLINE) && (Me.wMinWidth <= lngHalf))
+			{
+				if (blTail)
+				{
+					lngLeft = rcItem.left + lngHalf + 2;
+					lngWidth = lngHalf;
+					blTail = FALSE;
+				}
+				else
+				{
+					lngWidth = lngHalf;
+					blTail = TRUE;
+				}
+			}
+			else
+			{
+				blTail = FALSE;
+			}
+
+			switch (Me.dwStyle)
+			{
+				case SIS_ButtonEx:
+					//普通按钮
+					{
+						SubCtrl_Button_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if (CHK_FLAGS(Me.dwAttributes, SIA_EXLBL) && (Me.lpOpt[4]))
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_RadioButtonEx:
+					//单选按钮
+					{
+						SubCtrl_RadioButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+						}
+					}
+					break;
+
+				case SIS_CheckButtonEx:
+					//复选框
+					{
+						SubCtrl_CheckButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+						}
+					}
+					break;
+
+				case SIS_InputButtonEx:
+					//输入框
+					{
+						SubCtrl_InputButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if (Me.lpOpt[4])
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)GetStockObject(SYSTEM_FIXED_FONT), TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_ComboButtonEx:
+				case SIS_ComboRadioButtonEx:
+					//下拉列表
+					{
+						SubCtrl_ComboButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+
+							if ((Me.dwStyle == SIS_ComboButtonEx || Me.dwStyle == SIS_ComboRadioButtonEx) && (Me.lpOpt[4]))
+							{
+								SNDMSG((HWND)Me.lpOpt[4], WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+							}
+						}
+					}
+					break;
+
+				case SIS_Delimiter://分隔符			
+					{
+						SubCtrl_StaticButton_Create(hwSoftItem, &Me, lngLeft, rcItem.bottom, lngWidth, Me.wHeight);
+
+						if (Me._hWnd)
+						{
+							SNDMSG(Me._hWnd, WM_SETFONT, (WPARAM)hFont_cfg1, TRUE);
+
+							SetWindowLongA(Me._hWnd, GWL_ID, (LONG)i + 1000);
+							SetWindowLongA(Me._hWnd, GWL_USERDATA, (LONG)&Me);
+							::InvalidateRect(Me._hWnd, NULL, TRUE);
+						}
+					}
+					break;
+			}
+
+			if (Me._hWnd)
+			{
+				if (Me.dwStyle != SIS_Delimiter)
+					::GetWindowRect(Me._hWnd, &(Me.rect));
+
+				if (CHK_FLAGS(Me.dwAttributes, SIAE_DISABLED))
+					::EnableWindow(Me._hWnd, FALSE);
+			}
+
+			if (blTail == FALSE)
+				rcItem.bottom += Me.wHeight + 2;
+			else if (i < TagPage->dwNumOfSubItems)
+			{
+				if ((TagPage->lpSubItem[i + 1].wMinWidth > lngHalf) || CHK_FLAGS(TagPage->lpSubItem[i + 1].dwAttributes, SIA_FULLLINE))
+				{
+					rcItem.bottom += Me.wHeight + 2;
+					blTail = FALSE;
+				}
+			}
 
 #undef Me 
+		}
 	}
-
 	UpdateDataByTagPage(&ssSumItem);
 	RedrawWindow(NULL, NULL, RDW_ERASE | RDW_ALLCHILDREN);
 	InvalidateRect(NULL, TRUE);
@@ -386,10 +550,9 @@ int TDItem::TagPage_DestroyItems(BOOL blLeave)
 	{
 		if (ssSumItem.at(i)._hWnd)
 		{
-			vcButton.at(i)->DestroyWindow();
+			::DestroyWindow(ssSumItem.at(i)._hWnd);
 		}
 	}
-	UpdateWindow();
 	return 0;
 }
 
@@ -604,7 +767,14 @@ void TDItem::SoftItem_ActivationItemByOffsetIndex(PSOFT_SUB_ITEM lpSubItem, int 
 
 DWORD TDItem::GetCurrentSoftItemIndex(PSOFT_SUB_ITEM lpSubItem)
 {
-	return lpSubItem->dwGroupIndex;
+	for (size_t i = 0; i < ssSumItem.size(); i++)
+	{
+		if (ssSumItem.at(i)._hWnd == lpSubItem->_hWnd)
+		{
+			return i;
+		}
+	}
+	return INVALID_INDEX;
 }
 
 PSOFT_SUB_ITEM TDItem::GetGroupHeader(PSOFT_SUB_ITEM lpSubItem)
@@ -764,7 +934,7 @@ int TDItem::SubCtrl_CheckButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, sizeof(char) * 30, nullptr, nullptr);
 
 	TD_Button *tempBtn = new TD_Button(lpMe);
-	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | (CHK_FLAGS(lpMe->dwAttributes, SIA_GROUP) ? WS_GROUP : 0) | BS_OWNERDRAW,
+	tempBtn->CreateEx(0, WC_BUTTON, temp, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | BS_OWNERDRAW,
 		x, y, nWidth, nHeight, hWnd, nullptr, 0);
 
 	lpMe->_hWnd = tempBtn->m_hWnd;
@@ -877,13 +1047,7 @@ int TDItem::SubCtrl_ComboButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, in
 				else
 				{
 					memset(pBuffer, 0, sizeof(WCHAR) * 100);
-					MultiByteToWideChar(CP_ACP, 0, (LPCSTR)stCalObj.dwObjNameAdd, -1, pBuffer, lppWStr[dwIdx].size());
-					lppWStr[dwIdx].assign(pBuffer);
-
-					char *ctemp = new char[20];
-					WideCharToMultiByte(CP_ACP, 0, GetStringByIndex(lppWStr[dwIdx].c_str(), nLangId), -1, ctemp, sizeof(char) * 20, nullptr, nullptr);
-					Comtmp->InsertString(dwIdx, ctemp);
-					delete ctemp;
+					Comtmp->InsertString(dwIdx, (LPCSTR)stCalObj.dwObjNameAdd);
 				}
 			}
 		}
@@ -984,19 +1148,30 @@ int TDItem::SubCtrl_StaticButton_Create(HWND hWnd, PSOFT_SUB_ITEM lpMe, int x, i
 		dwExStyle = WS_EX_STATICEDGE;
 	}
 
-	char *temp = new char[30];
-	WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, 30, nullptr, nullptr);
-
 	TD_Button *tempBtn = new TD_Button(lpMe);
-	tempBtn->CreateEx(dwExStyle, WC_STATIC, temp, WS_CHILD | WS_VISIBLE | SS_CENTER,
-		x, rcItem.bottom, nWidth, lpMe->wHeight, hWnd, nullptr, 0);
+
+	char *temp = new char[30];
+	if (lpMe->lpszItemText)
+	{
+		WideCharToMultiByte(CP_ACP, 0, GetSoftItemTextByIndex(lpMe, nLangId), -1, temp, 30, nullptr, nullptr);
+
+		tempBtn->CreateEx(dwExStyle, WC_STATIC, temp, WS_CHILD | WS_VISIBLE | SS_CENTERIMAGE,
+			x, rcItem.bottom, nWidth, lpMe->wHeight, hWnd, nullptr, 0);
+		delete temp;
+	}
+	else
+	{
+		delete temp;
+		tempBtn->CreateEx(dwExStyle, WC_STATIC, 0, WS_CHILD | WS_VISIBLE | SS_CENTER,
+			x, rcItem.bottom, nWidth, lpMe->wHeight, hWnd, nullptr, 0);
+	}
+
 
 	lpMe->_hWnd = tempBtn->m_hWnd;
 
 	tempBtn->SetSoftSubItem(lpMe);
 	vcButton.push_back(tempBtn);
 
-	delete temp;
 	return 0;
 }
 
@@ -1005,6 +1180,7 @@ LRESULT OnCtlColorStatic(PSOFT_SUB_ITEM lpSubItem, HDC hCtlDC, HWND hCtlWnd)
 	SetBkMode(hCtlDC, TRANSPARENT);
 	return (LRESULT)(HBRUSH)(COLOR_DESKTOP);
 }
+
 // TDItem 消息处理程序
 LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -1026,7 +1202,7 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				TagPage_UpdateItemsPos();
 			}
 			break;
-
+			
 		case WM_KEYUP:
 			{
 				PSOFT_SUB_ITEM lpSubItem = &ssSumItem.at(dwFocusItem);
@@ -1139,7 +1315,7 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_SETFOCUS:
 			{
-				uiCurFocusMenu = uiCurMenus;
+				uiCurFocusMenu = uiCurMenus;			
 
 				PSOFT_SUB_ITEM lpSubItem = NULL;
 
@@ -1162,8 +1338,8 @@ LRESULT TDItem::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				if ((lpSubItem) && (lpSubItem->_hWnd))
 				{
 					::SetFocus(lpSubItem->_hWnd);
-					::InvalidateRect(lpSubItem->_hWnd, NULL, TRUE);
-					::UpdateWindow(lpSubItem->_hWnd);
+					InvalidateRect( NULL, TRUE);
+					UpdateWindow();
 				}
 				break;
 			}

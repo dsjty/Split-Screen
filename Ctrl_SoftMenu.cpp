@@ -209,10 +209,10 @@ BOOL WINAPI _CWnd__Create(CWnd *lpThis, LPCTSTR lpszClassName, LPCTSTR lpszWindo
 	cwMenuWnd = new TDMenu(1);
 	cwMenuWnd2 = new TDMenu(2);
 
-	cwMenuWnd->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
+	cwMenuWnd->CreateEx(WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 1", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect, pParentWnd, NULL, NULL);
 	hwSoftMenu = cwMenuWnd->m_hWnd;
 
-	cwMenuWnd2->CreateEx(WS_EX_ACCEPTFILES | WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 2", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect2, pParentWnd, NULL, NULL);
+	cwMenuWnd2->CreateEx(WS_EX_TOOLWINDOW, (LPCTSTR)wcSoftMenu, "MENU 2", WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN, crect2, pParentWnd, NULL, NULL);
 	hwSoftMenu2 = cwMenuWnd2->m_hWnd;
 
 #endif

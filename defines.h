@@ -102,8 +102,6 @@ extern HFONT hFont_cfg1, hFont_cfg2;      //字体配置1
 
 extern DWORD dwBaseAdd;
 
-#define PORTNUM										2		//机器端口数
-
 #define BASE										dwBaseAdd
 
 #define TA_ROOT										(void *)(0xD7CD4C)

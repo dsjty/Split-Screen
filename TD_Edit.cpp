@@ -38,9 +38,8 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_KEYDOWN:
 			{
-				HWND hwSoftItem = NULL;
 				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT))
-					DefWindowProc(message, wParam, lParam);
+					return CEdit::WindowProc(message, wParam, lParam);
 
 				switch (wParam)
 				{
@@ -59,30 +58,6 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					case VK_NEXT:
 						SoftItem_Finetune2(lpSubItem, -1);
 						break;
-
-					default:
-						DefWindowProc(message, wParam, lParam);
-						break;
-				}
-			}
-			break;
-
-		case WM_KEYUP:
-			{
-				if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT))
-					DefWindowProc(message, wParam, lParam);
-
-				switch (wParam)
-				{
-					case VK_UP:
-					case VK_DOWN:
-					case VK_PRIOR:
-					case VK_NEXT:
-						break;
-
-					default:
-						DefWindowProc(message, wParam, lParam);
-						break;
 				}
 			}
 			break;
@@ -93,8 +68,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					if (CHK_FLAGS(lpSubItem->dwAttributes, SIA_INPUT_TEXT) && (wParam != VK_RETURN))
 					{
-						DefWindowProc(message, wParam, lParam);
-						break;
+						return CEdit::WindowProc(message, wParam, lParam);
 					}
 				}
 
@@ -104,6 +78,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 						if (lpSubItem)
 						{
 							SetFocus();
+							SNDMSG(GetParent()->GetSafeHwnd(), BN_CLICKED, 0, 0);
 						}
 						break;
 
@@ -258,9 +233,6 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 							if (((wParam >= 'A') && (wParam <= 'Z')) || ((wParam >= 'a') && (wParam <= 'z')))
 								break;
 						}
-
-						DefWindowProc(message, wParam, lParam);
-						break;
 				}
 
 			}
@@ -268,8 +240,6 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_LBUTTONUP:
 			{
-				DefWindowProc(message, wParam, lParam);
-
 				SelectAllText(m_hWnd);
 			}
 			break;
@@ -329,12 +299,7 @@ LRESULT TD_Edit::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				short nDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 
 				SoftItem_Finetune(lpSubItem, nDelta, 1);
-				return 0;
 			}
-			break;
-
-		default:
-			DefWindowProc(message, wParam, lParam);
 			break;
 	}
 	return CEdit::WindowProc(message, wParam, lParam);

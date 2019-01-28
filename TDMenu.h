@@ -30,6 +30,7 @@ public:
 	PSOFT_SUB_ITEM GetSoftSubItem(int index);
 	int GetCurrMenuSer();
 	PSOFT_TAG_PAGE GetCurTagPage();
+	void fnMouseClick();
 
 
 

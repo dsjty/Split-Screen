@@ -488,8 +488,8 @@ HBRUSH TD_Button::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// TODO:  在此更改 DC 的任何特性
 	if (m_ssItem->dwStyle == SIS_Delimiter)
 	{
-		pDC->SetBkMode(TRANSPARENT);
-		pDC->SetBkColor(RGB(88, 88, 88));
+		//pDC->SetBkMode(TRANSPARENT);
+		pDC->SetBkColor(RGB(255, 255, 00));
 		HBRUSH hbr = CreateSolidBrush(RGB(88, 88, 88));
 	}
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔

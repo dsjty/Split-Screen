@@ -52,10 +52,21 @@ int PopWnd_PopupInputBox(HWND hParent, LPCWSTR lpTitle, void *lpInput, PSOFT_SUB
 		if (wcPopupWnd == 0)
 			return -2;
 	}
+	int popX = 0, popY = 0;
+	if (uiCurFocusMenu==1)
+	{
+		popX = GetSystemMetrics(SM_CXFULLSCREEN) / 4;
+		popY = GetSystemMetrics(SM_CYFULLSCREEN) / 4;
+	}
+	if (uiCurFocusMenu==2)
+	{
+		popX = GetSystemMetrics(SM_CXFULLSCREEN)+ GetSystemMetrics(SM_CXFULLSCREEN)/2;
+		popY = GetSystemMetrics(SM_CYFULLSCREEN) ;
+	}
 
 	if (hWnd_PopWnd == NULL)
 	{
-		hWnd_PopWnd = CreateWindowExW(0, (LPCWSTR)wcPopupWnd, L"PopWnd_PopupInputBox", WS_POPUP | WS_BORDER | WS_VISIBLE, 56, 56, 238, 64, hParent, NULL, hMod, NULL);
+		hWnd_PopWnd = CreateWindowExW(0, (LPCWSTR)wcPopupWnd, L"PopWnd_PopupInputBox", WS_POPUP | WS_BORDER | WS_VISIBLE, popX, popY, 238, 64, hParent, NULL, hMod, NULL);
 
 		if (hWnd_PopWnd == NULL)
 			return -3;

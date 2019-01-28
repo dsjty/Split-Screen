@@ -479,21 +479,34 @@ void fnUIinitialize()
 	OrigSoftMenu_ItemClicked2(CA_ALLOCCHAN, TA_ALLOCCHAN, 1);
 }
 
-void fnMouseClick()
+void TDMenu::fnMouseClick()
 {
-	CRect crect = { 0 };
-	if (uiCurFocusMenu == 1)
-		crect = crWnd1Rect;
-	else
-		crect = crWnd2Rect;
-	
-	DWORD cx = crect.Width() / 2;
-	DWORD cy = crect.Height() / 2;
+	DWORD cx = 0, cx2 = 0;
 
-	//mouse_event(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, cx, cy, NULL, NULL);
-	PSTMSG(hwMainWnd, 0x432, 0x4, 0);
-	PSTMSG(hwMainWnd, WM_LBUTTONDOWN, 1, MAKELPARAM(cx, cy));
-	PSTMSG(hwMainWnd, WM_LBUTTONUP, 1, MAKELPARAM(cx, cy));
+	CPoint poing;
+	GetCursorPos(&poing);
+
+	int xf = 1920 / 65535 * poing.x;
+	int yf = 1080 / 65535 * poing.y;
+
+	if (uiCurMenu == 1)
+	{
+		cx = 300;
+		cx2 = -200;
+	}
+	else
+	{
+		cx = -300;
+		cx2 = 200;
+	}
+	
+	mouse_event(MOUSEEVENTF_MOVE, cx, 0, NULL, NULL);
+	mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, NULL, NULL);
+	mouse_event(MOUSEEVENTF_MOVE, cx2, 0, NULL, NULL);
+
+	//PSTMSG(hwMainWnd, 0x432, 0x4, 0);
+	//PSTMSG(hwMainWnd, WM_LBUTTONDOWN, 1, MAKELPARAM(cx, cy));
+	//PSTMSG(hwMainWnd, WM_LBUTTONUP, 1, MAKELPARAM(cx, cy));
 }
 
 LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -573,12 +586,6 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_ERASEBKGND:
 			return TRUE;
-		case WM_LBUTTONDOWN:
-			{
-				uiCurFocusMenu = uiCurMenu;
-				fnMouseClick();
-				break;
-			}
 
 		case WM_LBUTTONUP:
 			{
@@ -647,6 +654,9 @@ LRESULT TDMenu::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		case WM_SETFOCUS:
 			{
+				if (uiCurFocusMenu != uiCurMenu)
+					fnMouseClick();
+
 				uiCurFocusMenu = uiCurMenu;
 				if (tdItem)
 					tdItem->SetFocus();

@@ -4,6 +4,9 @@
 #include "TDItem.h"
 #include "CalKit.h"
 
+#define PORTNUM										2		//机器端口数
+
+
 //当前活动的菜单窗口
 extern unsigned int uiCurFocusMenu;
 
